@@ -4,9 +4,12 @@ import {
   NavigationMenu,
   NavigationMenuContent,
   NavigationMenuItem,
+  NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
 } from "./ui/navigation-menu";
+import { cn } from "~/lib/utils";
 
 const menus = [
   {
@@ -126,19 +129,54 @@ export default function Navigation() {
         <Link to="/" className="text-lg font-bold tracking-tighter">
           wemake
         </Link>
-        <Separator orientation="vertical" className="mx-4 h-10" />
+        <div>
+          <Separator orientation="vertical" className="mx-4 h-6" />
+        </div>
         <NavigationMenu>
           <NavigationMenuList>
             {menus.map((menu) => (
               <NavigationMenuItem key={menu.name}>
-                <NavigationMenuTrigger>{menu.name}</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  {menu.items?.map((item) => (
-                    <NavigationMenuItem key={item.name}>
-                      <Link to={item.to}>{item.name}</Link>
-                    </NavigationMenuItem>
-                  ))}
-                </NavigationMenuContent>
+                {menu.items ? (
+                  <>
+                    <Link to={menu.to}>
+                      <NavigationMenuTrigger>{menu.name}</NavigationMenuTrigger>
+                    </Link>
+                    <NavigationMenuContent>
+                      <ul className="grid w-[600px] grid-cols-2 gap-3 p-4 font-light">
+                        {menu.items?.map((item) => (
+                          <NavigationMenuItem
+                            key={item.name}
+                            className={cn([
+                              "hover:bg-accent focus:bg-accent rounded-md transition-colors select-none",
+                              item.to === "/products/promote" &&
+                                "bg-primary/10 hover:bg-primary/20 focus:bg-primary/20 col-span-2",
+                              item.to === "/jobs/submit" &&
+                                "bg-primary/10 hover:bg-primary/20 focus:bg-primary/20 col-span-2",
+                            ])}
+                          >
+                            <NavigationMenuLink asChild>
+                              <Link
+                                className="flex flex-col items-start space-y-1 p-3 leading-none no-underline outline-none"
+                                to={item.to}
+                              >
+                                <span className="-mb-1 text-sm leading-none font-medium">
+                                  {item.name}
+                                </span>
+                                <p className="text-muted-foreground text-sm leading-snug">
+                                  {item.description}
+                                </p>
+                              </Link>
+                            </NavigationMenuLink>
+                          </NavigationMenuItem>
+                        ))}
+                      </ul>
+                    </NavigationMenuContent>
+                  </>
+                ) : (
+                  <Link className={navigationMenuTriggerStyle()} to={menu.to}>
+                    {menu.name}
+                  </Link>
+                )}
               </NavigationMenuItem>
             ))}
           </NavigationMenuList>
