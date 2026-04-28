@@ -2,9 +2,9 @@ import { Button } from "../components/ui/button";
 
 export default function HomePage() {
   return (
-    <main className="mx-auto container px-4 py-8">
-      <h1 className="text-4xl font-bold mb-6">Welcome to Our App</h1>
-      <p className="text-lg mb-8">
+    <main className="container mx-auto px-4 py-8">
+      <h1 className="mb-6 text-4xl font-bold">Welcome to Our App</h1>
+      <p className="mb-8 text-lg">
         Get started by exploring our features or sign in to your account.
       </p>
       <div className="flex gap-4">
