@@ -173,12 +173,12 @@ export default function Navigation({
                         {menu.items?.map((item) => (
                           <NavigationMenuItem
                             key={item.name}
-                            className={cn([
+                            className={cn(
                               "hover:bg-accent focus:bg-accent rounded-md transition-colors select-none",
                               (item.to === "/products/promote" ||
                                 item.to === "/jobs/submit") &&
                                 "bg-primary/10 hover:bg-primary/20 focus:bg-primary/20 col-span-2",
-                            ])}
+                            )}
                           >
                             <NavigationMenuLink asChild>
                               <Link

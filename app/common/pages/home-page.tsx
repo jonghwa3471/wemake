@@ -2,6 +2,7 @@ import { Link, type MetaFunction } from "react-router";
 import { ProductCard } from "~/features/products/components/product-card";
 import { PostCard } from "~/features/community/components/post-card";
 import { IdeaCard } from "~/features/ideas/components/idea-card";
+import { JobCard } from "~/features/jobs/components/job-card";
 import { Button } from "../components/ui/button";
 
 export const meta: MetaFunction = () => {
@@ -84,6 +85,33 @@ export default function HomePage() {
             postedAt="12 hours ago"
             likesCount={12}
             claimed={index % 2 === 0}
+          />
+        ))}
+      </div>
+      <div className="grid grid-cols-4 gap-4">
+        <div>
+          <h2 className="text-5xl leading-tight font-bold tracking-tight">
+            Latest Jobs
+          </h2>
+          <p className="text-foreground text-xl font-light">
+            Find your dream job.
+          </p>
+          <Button variant="link" asChild className="p-0 text-lg">
+            <Link to="/jobs">Explore all jobs &rarr;</Link>
+          </Button>
+        </div>
+        {Array.from({ length: 11 }).map((_, index) => (
+          <JobCard
+            key={`jobId-${index}`}
+            id={`jobId-${index}`}
+            company="Meta"
+            companyLogoUrl="https://github.com/facebook.png"
+            postedAt="12 hours ago"
+            title="Software Engineer"
+            type="Full-time"
+            positionLocation="Remote"
+            salary="$100,000 - $120,000"
+            companyHq="San Francisco, CA"
           />
         ))}
       </div>
