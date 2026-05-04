@@ -13,7 +13,7 @@ export function loader({ params, request }: Route.LoaderArgs) {
   } else if (period === "monthly") {
     url = `/products/leaderboards/monthly/${today.year}/${today.month}`;
   } else if (period === "yearly") {
-    url = `/products/leaderboards/yealy/${today.year}`;
+    url = `/products/leaderboards/yearly/${today.year}`;
   } else {
     return data(null, { status: 400 });
     // data fn으로 Response를 shortcut으로 사용할 수 있다.

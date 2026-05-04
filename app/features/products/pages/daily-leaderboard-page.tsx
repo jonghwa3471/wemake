@@ -1,40 +1,74 @@
-import type { MetaFunction } from "react-router";
+import { DateTime } from "luxon";
 import type { Route } from "./+types/daily-leaderboard-page";
+import { data, isRouteErrorResponse } from "react-router";
+import z from "zod";
 
-export function loader({ params, request }: Route.LoaderArgs) {
+const paramsSchema = z.object({
+  year: z.coerce.number(),
+  month: z.coerce.number(),
+  day: z.coerce.number(),
+});
+
+export function loader({ params }: Route.LoaderArgs) {
+  const { success, data: parsedData } = paramsSchema.safeParse(params);
+  if (!success) {
+    throw data(
+      {
+        error_code: "invalid_date",
+        message: "Invalid date",
+      },
+      {
+        status: 400,
+      },
+    );
+  }
+  const date = DateTime.fromObject(parsedData).setZone("Asia/Seoul");
+  if (!date.isValid) {
+    throw data(
+      {
+        error_code: "invalid_date",
+        message: "Invalid date",
+      },
+      {
+        status: 400,
+      },
+    );
+  }
+  const today = DateTime.now().setZone("Asia/Seoul").startOf("day");
+  if (date > today) {
+    throw data(
+      {
+        error_code: "future_date",
+        message: "Future date",
+      },
+      {
+        status: 400,
+      },
+    );
+  }
   return {
-    year: params.year,
-    month: params.month,
-    day: params.day,
-    requestUrl: request.url,
+    year: date.year,
+    month: date.month,
+    day: date.day,
   };
 }
-
-export function action({ params, request }: Route.ActionArgs) {
-  return {
-    year: params.year,
-    month: params.month,
-    day: params.day,
-    requestMethod: request.method,
-  };
-}
-
-export const meta: MetaFunction = () => {
-  return [
-    { title: "Daily Leaderboard | wemake" },
-    { name: "description", content: "View daily product rankings." },
-  ];
-};
 
 export default function DailyLeaderboardPage({
   loaderData,
 }: Route.ComponentProps) {
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="mb-6 text-3xl font-bold">
-        Top Products of {loaderData.month}/{loaderData.day}/{loaderData.year}
-      </h1>
-      {/* Add daily leaderboard content */}
-    </div>
-  );
+  return <div className="container mx-auto px-4 py-8"></div>;
+}
+
+export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+  if (isRouteErrorResponse(error)) {
+    return (
+      <div>
+        {error.data.message} / {error.data.error_code}
+      </div>
+    );
+  }
+  if (error instanceof Error) {
+    return <div>{error.message}</div>;
+  }
+  return <div>Unknown error</div>;
 }
