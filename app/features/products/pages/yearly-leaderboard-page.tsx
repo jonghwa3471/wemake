@@ -11,6 +11,21 @@ const paramsSchema = z.object({
   year: z.coerce.number(),
 });
 
+export const meta: Route.MetaFunction = ({ params }: Route.MetaArgs) => {
+  const date = DateTime.fromObject({
+    year: Number(params.year),
+  })
+    .setZone("Asia/Seoul")
+    .setLocale("ko");
+  return [
+    {
+      title: `Best of ${date.toLocaleString({
+        year: "numeric",
+      })}`,
+    },
+  ];
+};
+
 export function loader({ params }: Route.LoaderArgs) {
   const { success, data: parsedData } = paramsSchema.safeParse(params);
   if (!success) {
@@ -67,7 +82,7 @@ export default function YearlyLeaderboardPage({
   return (
     <div className="space-y-10">
       <PageHero
-        title={`Best of week ${urlDate.toLocaleString({
+        title={`Best of ${urlDate.toLocaleString({
           year: "numeric",
         })}`}
       />

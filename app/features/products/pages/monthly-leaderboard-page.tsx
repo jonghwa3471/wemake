@@ -12,6 +12,23 @@ const paramsSchema = z.object({
   month: z.coerce.number(),
 });
 
+export const meta: Route.MetaFunction = ({ params }: Route.MetaArgs) => {
+  const date = DateTime.fromObject({
+    year: Number(params.year),
+    month: Number(params.month),
+  })
+    .setZone("Asia/Seoul")
+    .setLocale("ko");
+  return [
+    {
+      title: `Best of week ${date.toLocaleString({
+        year: "2-digit",
+        month: "long",
+      })} | wemake`,
+    },
+  ];
+};
+
 export function loader({ params }: Route.LoaderArgs) {
   const { success, data: parsedData } = paramsSchema.safeParse(params);
   if (!success) {
