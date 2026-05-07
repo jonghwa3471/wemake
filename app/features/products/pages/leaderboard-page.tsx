@@ -24,7 +24,7 @@ export default function LeaderboardPage({ loaderData }: Route.ComponentProps) {
     <div className="space-y-20">
       <PageHero
         title="Leaderboards"
-        description="The most popular products on wemake"
+        subtitle="The most popular products on wemake"
       />
       <div className="grid grid-cols-3 gap-4">
         <div>

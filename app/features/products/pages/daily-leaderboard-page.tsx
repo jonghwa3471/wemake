@@ -1,7 +1,11 @@
 import { DateTime } from "luxon";
 import type { Route } from "./+types/daily-leaderboard-page";
-import { data, isRouteErrorResponse } from "react-router";
+import { data, isRouteErrorResponse, Link } from "react-router";
 import z from "zod";
+import { PageHero } from "~/common/components/page-hero";
+import { ProductCard } from "../components/product-card";
+import { Button } from "~/common/components/ui/button";
+import ProductPagination from "~/common/components/product-pagination";
 
 const paramsSchema = z.object({
   year: z.coerce.number(),
@@ -22,7 +26,7 @@ export function loader({ params }: Route.LoaderArgs) {
       },
     );
   }
-  const date = DateTime.fromObject(parsedData).setZone("Asia/Seoul");
+  const date = DateTime.fromObject(parsedData);
   if (!date.isValid) {
     throw data(
       {
@@ -34,7 +38,7 @@ export function loader({ params }: Route.LoaderArgs) {
       },
     );
   }
-  const today = DateTime.now().setZone("Asia/Seoul").startOf("day");
+  const today = DateTime.now().startOf("day");
   if (date > today) {
     throw data(
       {
@@ -47,16 +51,56 @@ export function loader({ params }: Route.LoaderArgs) {
     );
   }
   return {
-    year: date.year,
-    month: date.month,
-    day: date.day,
+    ...parsedData,
   };
 }
 
 export default function DailyLeaderboardPage({
   loaderData,
 }: Route.ComponentProps) {
-  return <div className="container mx-auto px-4 py-8"></div>;
+  const urlDate = DateTime.fromObject(loaderData);
+  const prevDay = urlDate.minus({ days: 1 });
+  const nextDay = urlDate.plus({ days: 1 });
+  const isToday = urlDate.equals(DateTime.now().startOf("day"));
+  return (
+    <div className="space-y-10">
+      <PageHero
+        title={`The best products of ${urlDate.toLocaleString(DateTime.DATE_MED)}`}
+      />
+      <div className="flex items-center justify-center gap-2">
+        <Button variant={"secondary"} asChild>
+          <Link
+            to={`/products/leaderboards/daily/${prevDay.year}/${prevDay.month}/${prevDay.day}`}
+          >
+            &larr; {prevDay.toLocaleString(DateTime.DATE_SHORT)}
+          </Link>
+        </Button>
+        {!isToday && (
+          <Button variant={"secondary"} asChild>
+            <Link
+              to={`/products/leaderboards/daily/${nextDay.year}/${nextDay.month}/${nextDay.day}`}
+            >
+              {nextDay.toLocaleString(DateTime.DATE_SHORT)} &rarr;
+            </Link>
+          </Button>
+        )}
+      </div>
+      <div className="mx-auto w-full max-w-3xl space-y-5">
+        {Array.from({ length: 11 }).map((_, index) => (
+          <ProductCard
+            key={`productId-${index}`}
+            id={`productId-${index}`}
+            name="Product Name"
+            description="Product Description"
+            commentsCount={12}
+            viewsCount={12}
+            votesCount={120}
+          />
+        ))}
+      </div>
+      <ProductPagination totalPages={10} />
+    </div>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
