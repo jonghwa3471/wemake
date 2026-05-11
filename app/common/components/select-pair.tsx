@@ -30,7 +30,7 @@ export default function SelectPair({
 }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="flex flex-col items-start space-y-2">
+    <div className="flex w-full flex-col items-start space-y-2">
       <Label
         className="flex flex-col items-start gap-1"
         onClick={() => setOpen(true)}
