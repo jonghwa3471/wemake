@@ -23,63 +23,23 @@ export default function ProductOverviewPage({
 }: Route.ComponentProps) {
   return (
     <div className="space-y-10">
-      <div className="flex justify-between">
-        <div className="flex gap-10">
-          <div className="bg-primary/50 size-40 rounded-xl shadow-xl"></div>
-          <div>
-            <h1 className="text-5xl font-bold">Product Name</h1>
-            <p className="text-2xl font-light">Product description</p>
-            <div className="mt-5 flex items-center gap-2">
-              <div className="flex text-yellow-400">
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <StarIcon className="size-4" fill="currentColor" />
-                ))}
-              </div>
-              <span className="text-muted-foreground">100 reviews</span>
-            </div>
-          </div>
-        </div>
-        <div className="flex gap-5">
-          <Button
-            variant={"secondary"}
-            size={"lg"}
-            className="h-14 px-10 text-lg"
-          >
-            Visit website
-          </Button>
-          <Button size={"lg"} className="h-14 px-10 text-lg">
-            <ChevronUpIcon className="size-4" />
-            Upvote (100)
-          </Button>
-        </div>
+      <div className="space-y-1">
+        <h3 className="text-lg font-bold">What is this product?</h3>
+        <p className="text-muted-foreground">
+          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Hic voluptas
+          quo rerum commodi ducimus expedita consequuntur mollitia, tenetur
+          animi consectetur libero laborum molestiae velit ratione deleniti
+          voluptatibus nam atque! Architecto.
+        </p>
       </div>
-      <div className="flex gap-2">
-        <Button variant={"outline"} asChild>
-          <Link to={`/products/${productId}/overview`}>Overview</Link>
-        </Button>
-        <Button variant={"outline"} asChild>
-          <Link to={`/products/${productId}/reviews`}>Reviews</Link>
-        </Button>
-      </div>
-      <div className="space-y-10">
-        <div className="space-y-1">
-          <h3 className="text-lg font-bold">What is this product?</h3>
-          <p className="text-muted-foreground">
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Hic
-            voluptas quo rerum commodi ducimus expedita consequuntur mollitia,
-            tenetur animi consectetur libero laborum molestiae velit ratione
-            deleniti voluptatibus nam atque! Architecto.
-          </p>
-        </div>
-        <div className="space-y-1">
-          <h3 className="text-lg font-bold">How does it work?</h3>
-          <p className="text-muted-foreground">
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Hic
-            voluptas quo rerum commodi ducimus expedita consequuntur mollitia,
-            tenetur animi consectetur libero laborum molestiae velit ratione
-            deleniti voluptatibus nam atque! Architecto.
-          </p>
-        </div>
+      <div className="space-y-1">
+        <h3 className="text-lg font-bold">How does it work?</h3>
+        <p className="text-muted-foreground">
+          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Hic voluptas
+          quo rerum commodi ducimus expedita consequuntur mollitia, tenetur
+          animi consectetur libero laborum molestiae velit ratione deleniti
+          voluptatibus nam atque! Architecto.
+        </p>
       </div>
     </div>
   );
