@@ -70,6 +70,7 @@ export default function PromotePage() {
             </small>
           </Label>
           <Calendar
+            className="min-w-sm"
             mode="range"
             selected={promotionPeriod}
             onSelect={setPromotionPeriod}

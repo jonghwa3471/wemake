@@ -8,7 +8,7 @@ import {
 
 export default [
   index("common/pages/home-page.tsx"),
-  ...prefix("products", [
+  ...prefix("/products", [
     index("features/products/pages/products-page.tsx"),
     ...prefix("leaderboards", [
       index("features/products/pages/leaderboard-page.tsx"),
@@ -49,5 +49,9 @@ export default [
         ]),
       ]),
     ]),
+  ]),
+  ...prefix("/ideas", [
+    index("features/ideas/pages/ideas-page.tsx"),
+    route("/:ideaId", "features/ideas/pages/idea-page.tsx"),
   ]),
 ] satisfies RouteConfig;
