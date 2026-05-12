@@ -4,15 +4,6 @@ import { PageHero } from "~/common/components/page-hero";
 import { Label } from "~/common/components/ui/label";
 import { Input } from "~/common/components/ui/input";
 import InputPair from "~/common/components/input-pair";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "~/common/components/ui/select";
 import SelectPair from "~/common/components/select-pair";
 import React, { useState } from "react";
 import { Button } from "~/common/components/ui/button";
