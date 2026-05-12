@@ -15,7 +15,11 @@ export default function ProductOverviewLayout() {
             <div className="mt-5 flex items-center gap-2">
               <div className="flex text-yellow-400">
                 {Array.from({ length: 5 }).map((_, index) => (
-                  <StarIcon className="size-4" fill="currentColor" />
+                  <StarIcon
+                    key={index}
+                    className="size-4"
+                    fill="currentColor"
+                  />
                 ))}
               </div>
               <span className="text-muted-foreground">100 reviews</span>
