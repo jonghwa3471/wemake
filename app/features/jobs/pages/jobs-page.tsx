@@ -29,7 +29,7 @@ export default function JobsPage() {
       <PageHero title="Jobs" subtitle="Companies looking for makers" />
       <div className="grid grid-cols-6 items-start gap-20">
         <div className="col-span-4 grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-5">
-          {Array.from({ length: 11 }).map((_, index) => (
+          {Array.from({ length: 20 }).map((_, index) => (
             <JobCard
               key={`jobId-${index}`}
               id={`jobId-${index}`}
@@ -44,7 +44,7 @@ export default function JobsPage() {
             />
           ))}
         </div>
-        <div className="col-span-2 flex flex-col gap-10">
+        <div className="sticky top-20 col-span-2 flex flex-col gap-10">
           <div className="flex flex-col items-start gap-2">
             <h4 className="text-muted-foreground text-sm font-bold">Type</h4>
             <div className="flex flex-wrap gap-2">
