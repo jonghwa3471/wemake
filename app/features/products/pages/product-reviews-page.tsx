@@ -1,14 +1,7 @@
 import { Button } from "~/common/components/ui/button";
 import type { Route } from "./+types/product-reviews-page";
 import { ReviewCard } from "../components/review-card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "~/common/components/ui/dialog";
+import { Dialog, DialogTrigger } from "~/common/components/ui/dialog";
 import CreateReviewDialog from "../components/create-review-dialog";
 
 export function loader({ params }: Route.LoaderArgs) {
