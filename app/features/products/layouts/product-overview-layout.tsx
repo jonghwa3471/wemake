@@ -42,13 +42,14 @@ export default function ProductOverviewLayout() {
       </div>
       <div className="flex gap-2">
         <NavLink
+          end
           className={({ isActive }) =>
             cn(
               buttonVariants({ variant: "outline" }),
               isActive && "bg-accent text-foreground",
             )
           }
-          to={`/products/productId-0/overview`}
+          to={`/products/1/overview`}
         >
           Overview
         </NavLink>
@@ -59,7 +60,7 @@ export default function ProductOverviewLayout() {
               isActive && "bg-accent text-foreground",
             )
           }
-          to={`/products/productId-0/reviews`}
+          to={`/products/1/reviews`}
         >
           Reviews
         </NavLink>
