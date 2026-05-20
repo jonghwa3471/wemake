@@ -10,7 +10,7 @@ import {
 
 export default function MessagesLayout() {
   return (
-    <SidebarProvider className="h-full max-h-[calc(100vh-14rem)] min-h-full overflow-hidden">
+    <SidebarProvider className="flex h-[calc(100vh-14rem)] max-h-[calc(100vh-14rem)] min-h-full overflow-hidden">
       <Sidebar className="pt-16" variant="floating">
         <SidebarContent>
           <SidebarGroup>
@@ -28,7 +28,7 @@ export default function MessagesLayout() {
           </SidebarGroup>
         </SidebarContent>
       </Sidebar>
-      <div className="h-full w-full">
+      <div className="flex-1 p-1">
         <Outlet />
       </div>
     </SidebarProvider>
