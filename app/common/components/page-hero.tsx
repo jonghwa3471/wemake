@@ -15,7 +15,9 @@ export function PageHero({ title, subtitle, className }: PageHeroProps) {
       )}
     >
       <h1 className="text-5xl font-bold">{title}</h1>
-      <p className="text-foreground text-2xl font-light">{subtitle}</p>
+      <p className="text-foreground text-center text-2xl font-light">
+        {subtitle}
+      </p>
     </div>
   );
 }

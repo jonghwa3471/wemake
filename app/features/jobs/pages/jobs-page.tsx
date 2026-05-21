@@ -27,8 +27,8 @@ export default function JobsPage() {
   return (
     <div className="space-y-20">
       <PageHero title="Jobs" subtitle="Companies looking for makers" />
-      <div className="grid grid-cols-6 items-start gap-20">
-        <div className="col-span-4 grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-5">
+      <div className="grid grid-cols-1 items-start gap-20 xl:grid-cols-6">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:col-span-4">
           {Array.from({ length: 20 }).map((_, index) => (
             <JobCard
               key={`jobId-${index}`}
@@ -44,12 +44,13 @@ export default function JobsPage() {
             />
           ))}
         </div>
-        <div className="sticky top-20 col-span-2 flex flex-col gap-10">
+        <div className="sticky top-20 flex flex-col gap-10 xl:col-span-2">
           <div className="flex flex-col items-start gap-2">
             <h4 className="text-muted-foreground text-sm font-bold">Type</h4>
             <div className="flex flex-wrap gap-2">
-              {JOB_TYPES.map((type) => (
+              {JOB_TYPES.map((type, index) => (
                 <Button
+                  key={index}
                   variant={"outline"}
                   onClick={() => onFilterClick("type", type.value)}
                   className={cn(
@@ -66,8 +67,9 @@ export default function JobsPage() {
               Location
             </h4>
             <div className="flex flex-wrap gap-2">
-              {LOCATION_TYPES.map((type) => (
+              {LOCATION_TYPES.map((type, index) => (
                 <Button
+                  key={index}
                   variant={"outline"}
                   onClick={() => onFilterClick("location", type.value)}
                   className={cn(
@@ -86,8 +88,9 @@ export default function JobsPage() {
               Salary Range
             </h4>
             <div className="flex flex-wrap gap-2">
-              {SALARY_RANGE.map((range) => (
+              {SALARY_RANGE.map((range, index) => (
                 <Button
+                  key={index}
                   variant={"outline"}
                   onClick={() => onFilterClick("salary", range)}
                   className={cn(

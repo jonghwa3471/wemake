@@ -49,7 +49,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   const { pathname } = useLocation();
   return (
-    <div className={pathname.includes("/auth/") ? "" : "px-20 py-28"}>
+    <div className={pathname.includes("/auth/") ? "" : "px-5 py-28 lg:px-20"}>
       {pathname.includes("/auth/") ? null : (
         <Navigation
           isLoggedIn={true}
