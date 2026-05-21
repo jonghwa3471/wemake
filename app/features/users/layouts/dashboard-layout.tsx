@@ -48,7 +48,10 @@ export default function DashboardLayout() {
             <SidebarGroupLabel>Product Analytics</SidebarGroupLabel>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
+                <SidebarMenuButton
+                  asChild
+                  isActive={location.pathname === "/my/dashboard/products/1"}
+                >
                   <Link to={`/my/dashboard/products/1`}>
                     <RocketIcon className="size-4" />
                     <span>Product 1</span>
