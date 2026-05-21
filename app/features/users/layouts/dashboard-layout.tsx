@@ -59,7 +59,7 @@ export default function DashboardLayout() {
           </SidebarGroup>
         </SidebarContent>
       </Sidebar>
-      <div className="flex-1 p-1">
+      <div className="w-full flex-1 p-1">
         <Outlet />
       </div>
     </SidebarProvider>
