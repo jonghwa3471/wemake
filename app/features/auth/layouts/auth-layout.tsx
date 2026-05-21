@@ -1,9 +1,18 @@
 import { Outlet } from "react-router";
+import { FlickeringGrid } from "~/common/components/ui/flickering-grid";
 
 export default function AuthLayout() {
   return (
     <div className="grid h-screen grid-cols-1 lg:grid-cols-2">
-      <div className="from-primary to-primary/50 hidden bg-linear-to-br via-black lg:block" />
+      <div>
+        <FlickeringGrid
+          squareSize={4}
+          gridGap={5}
+          maxOpacity={0.5}
+          flickerChance={0.2}
+          color="#C70036"
+        />
+      </div>
       <Outlet />
     </div>
   );
