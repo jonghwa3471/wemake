@@ -50,6 +50,13 @@
       "when": 1779773686929,
       "tag": "0006_military_major_mapleleaf",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1779776857941,
+      "tag": "0007_sparkling_stranger",
+      "breakpoints": true
     }
   ]
 }
