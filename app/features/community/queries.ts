@@ -2,8 +2,9 @@ import db from "~/db";
 import { posts, postUpvotes, topics } from "./schema";
 import { asc, count, eq } from "drizzle-orm";
 import { profiles } from "../users/schema";
+import client from "~/supa-client";
 
-export const getTopics = async () => {
+/* export const getTopics = async () => {
   const allTopics = await db
     .select({
       name: topics.name,
@@ -11,9 +12,9 @@ export const getTopics = async () => {
     })
     .from(topics);
   return allTopics;
-};
+}; */
 
-export const getPosts = async () => {
+/* export const getPosts = async () => {
   const allPosts = await db
     .select({
       id: posts.post_id,
@@ -38,4 +39,14 @@ export const getPosts = async () => {
     )
     .orderBy(asc(posts.post_id));
   return allPosts;
+}; */
+
+export const getTopics = async () => {
+  const { data, error } = await client.from("topics").select("name, slug");
+  console.log(data, error);
+  return data;
+};
+
+export const getPosts = async () => {
+  const {} = await client.from("posts").select(`id, title, created_at`);
 };
