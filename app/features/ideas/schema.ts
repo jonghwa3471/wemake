@@ -23,7 +23,7 @@ export const gptIdeas = pgTable("gpt_ideas", {
 });
 
 export const gptIdeasLikes = pgTable(
-  "gpt_ldeas_likes",
+  "gpt_ideas_likes",
   {
     gpt_idea_id: bigint({ mode: "number" }).references(
       () => gptIdeas.gpt_idea_id,
