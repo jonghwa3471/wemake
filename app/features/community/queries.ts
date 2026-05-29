@@ -54,7 +54,6 @@ export const getPosts = async () => {
   const { data, error } = await client
     .from("community_post_list_view")
     .select(`*`);
-  console.log(error);
   if (error) throw new Error(error.message);
   return data;
 };
