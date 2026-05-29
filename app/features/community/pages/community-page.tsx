@@ -20,17 +20,16 @@ export const meta: Route.MetaFunction = () => {
 };
 
 export async function loader() {
-  // await new Promise((resolve) => setTimeout(resolve, 10000));
-  // const topics = await getTopics();
-  // const posts = await getPosts();
   const [topics, posts] = await Promise.all([getTopics(), getPosts()]);
-  /*   const topics = getTopics();
-  const posts = getPosts(); */
   return { topics, posts };
 }
 
+export async function clientLoader({ serverLoader }: Route.ClientLoaderArgs) {
+  // track analytics
+  return await serverLoader();
+}
+
 export default function CommunityPage({ loaderData }: Route.ComponentProps) {
-  const { topics, posts } = loaderData;
   const [searchParams, setSearchParams] = useSearchParams();
   const sorting = searchParams.get("sorting") || "newest";
   const period = searchParams.get("period") || "all";
@@ -105,7 +104,7 @@ export default function CommunityPage({ loaderData }: Route.ComponentProps) {
             </Button>
           </div>
           <div className="space-y-5">
-            {posts.map((post) => (
+            {loaderData.posts.map((post) => (
               <PostCard
                 key={post.post_id}
                 id={post.post_id}
@@ -125,7 +124,7 @@ export default function CommunityPage({ loaderData }: Route.ComponentProps) {
             Topics
           </span>
           <div className="flex flex-col items-start gap-2">
-            {topics.map((topic) => (
+            {loaderData.topics.map((topic) => (
               <Button
                 asChild
                 variant={"link"}
@@ -145,4 +144,8 @@ export default function CommunityPage({ loaderData }: Route.ComponentProps) {
       </div>
     </div>
   );
+}
+
+export function HydrateFallback() {
+  return <div>Loading...</div>;
 }
