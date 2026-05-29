@@ -78,6 +78,13 @@
       "when": 1779944040307,
       "tag": "0010_next_speed",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1780036897520,
+      "tag": "0011_heavy_doctor_strange",
+      "breakpoints": true
     }
   ]
 }
