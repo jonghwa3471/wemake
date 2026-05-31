@@ -6,6 +6,8 @@ import { PageHero } from "~/common/components/page-hero";
 import { ProductCard } from "../components/product-card";
 import { Button } from "~/common/components/ui/button";
 import ProductPagination from "~/common/components/product-pagination";
+import { getProductPagesByDateRange, getProductsByDateRange } from "../queries";
+import { PAGE_SIZE } from "../constants";
 
 const paramsSchema = z.object({
   year: z.coerce.number(),
@@ -21,15 +23,15 @@ export const meta: Route.MetaFunction = ({ params }: Route.MetaArgs) => {
     .setLocale("ko");
   return [
     {
-      title: `Best of week ${date.toLocaleString({
-        year: "2-digit",
+      title: `Best of ${date.toLocaleString({
         month: "long",
+        year: "2-digit",
       })} | wemake`,
     },
   ];
 };
 
-export function loader({ params }: Route.LoaderArgs) {
+export async function loader({ request, params }: Route.LoaderArgs) {
   const { success, data: parsedData } = paramsSchema.safeParse(params);
   if (!success) {
     throw data(
@@ -69,9 +71,18 @@ export function loader({ params }: Route.LoaderArgs) {
       },
     );
   }
-  return {
-    ...parsedData,
-  };
+  const url = new URL(request.url);
+  const products = await getProductsByDateRange({
+    startDate: date.startOf("month"),
+    endDate: date.endOf("month"),
+    limit: PAGE_SIZE,
+    page: Number(url.searchParams.get("page") || 1),
+  });
+  const totalPages = await getProductPagesByDateRange({
+    startDate: date.startOf("month"),
+    endDate: date.endOf("month"),
+  });
+  return { products, totalPages, ...parsedData };
 }
 
 export default function MonthlyLeaderboardPage({
@@ -87,7 +98,7 @@ export default function MonthlyLeaderboardPage({
   return (
     <div className="space-y-10">
       <PageHero
-        title={`Best of week ${urlDate.toLocaleString({
+        title={`Best of ${urlDate.toLocaleString({
           year: "2-digit",
           month: "long",
         })}`}
@@ -119,19 +130,19 @@ export default function MonthlyLeaderboardPage({
         )}
       </div>
       <div className="mx-auto w-full max-w-3xl space-y-5">
-        {Array.from({ length: 11 }).map((_, index) => (
+        {loaderData.products.map((product) => (
           <ProductCard
-            key={`productId-${index}`}
-            id={`productId-${index}`}
-            name="Product Name"
-            description="Product Description"
-            commentsCount={12}
-            viewsCount={12}
-            votesCount={120}
+            key={product.product_id}
+            id={product.product_id.toString()}
+            name={product.name}
+            description={product.description}
+            reviewsCount={product.reviews}
+            viewsCount={product.views}
+            votesCount={product.upvotes}
           />
         ))}
       </div>
-      <ProductPagination totalPages={10} />
+      <ProductPagination totalPages={loaderData.totalPages} />
     </div>
   );
 }
