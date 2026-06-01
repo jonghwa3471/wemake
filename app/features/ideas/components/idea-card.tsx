@@ -10,9 +10,10 @@ import {
   CardTitle,
 } from "~/common/components/ui/card";
 import { cn } from "~/lib/utils";
+import { DateTime } from "luxon";
 
 interface IdeaCardProps {
-  id: string;
+  id: number;
   title: string;
   viewsCount: number;
   postedAt: string;
@@ -51,7 +52,7 @@ export function IdeaCard({
           <span>{viewsCount}</span>
         </div>
         <DotIcon className="size-4" />
-        <span>{postedAt}</span>
+        <span>{DateTime.fromISO(postedAt).toRelative()}</span>
       </CardContent>
       <CardFooter className="flex justify-end gap-2 border-none bg-transparent">
         <Button variant="outline">
