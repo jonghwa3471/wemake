@@ -8,6 +8,7 @@ import { Button } from "../components/ui/button";
 import type { Route } from "./+types/home-page";
 import { getProductsByDateRange } from "~/features/products/queries";
 import { DateTime } from "luxon";
+import { getPosts } from "~/features/community/queries";
 
 export const meta: MetaFunction = () => {
   return [
@@ -23,7 +24,11 @@ export async function loader() {
     endDate: DateTime.now().endOf("day"),
     limit: 7,
   });
-  return { products };
+  const posts = await getPosts({
+    limit: 7,
+    sorting: "newest",
+  });
+  return { products, posts };
 }
 
 export default function HomePage({ loaderData }: Route.ComponentProps) {
@@ -53,7 +58,7 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
           />
         ))}
       </div>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 items-start gap-4">
         <div>
           <h2 className="text-5xl leading-tight font-bold tracking-tight">
             Latest Discussions
@@ -65,15 +70,16 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
             <Link to="/community">Explore all discussions &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 11 }).map((_, index) => (
+        {loaderData.posts.map((post) => (
           <PostCard
-            key={`postId-${index}`}
-            id={index}
-            title="What is the best productivity tool?"
-            author="Nico"
-            authorAvatarUrl="https://github.com/apple.png"
-            category="Productivity"
-            postedAt="12 hours ago"
+            key={post.post_id}
+            id={post.post_id}
+            title={post.title}
+            author={post.author}
+            authorAvatarUrl={post.author_avatar}
+            category={post.topic}
+            postedAt={post.created_at}
+            votesCount={post.upvotes}
           />
         ))}
       </div>
