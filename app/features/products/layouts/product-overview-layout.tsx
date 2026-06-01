@@ -2,8 +2,11 @@ import { ChevronUpIcon, StarIcon } from "lucide-react";
 import { NavLink, Outlet } from "react-router";
 import { Button, buttonVariants } from "~/common/components/ui/button";
 import { cn } from "~/lib/utils";
+import type { Route } from "./+types/product-overview-layout";
 
-export default function ProductOverviewLayout() {
+export default function ProductOverviewLayout({
+  params,
+}: Route.ComponentProps) {
   return (
     <div className="space-y-10">
       <div className="flex justify-between">
@@ -49,7 +52,7 @@ export default function ProductOverviewLayout() {
               isActive && "bg-accent text-foreground",
             )
           }
-          to={`/products/1/overview`}
+          to={`/products/${params.productId}/overview`}
         >
           Overview
         </NavLink>
@@ -60,7 +63,7 @@ export default function ProductOverviewLayout() {
               isActive && "bg-accent text-foreground",
             )
           }
-          to={`/products/1/reviews`}
+          to={`/products/${params.productId}/reviews`}
         >
           Reviews
         </NavLink>

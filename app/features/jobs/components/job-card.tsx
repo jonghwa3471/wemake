@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import { Link } from "react-router";
 
 import { Badge } from "~/common/components/ui/badge";
@@ -11,7 +12,7 @@ import {
 } from "~/common/components/ui/card";
 
 interface JobCardProps {
-  id: string;
+  id: number;
   company: string;
   companyLogoUrl: string;
   postedAt: string;
@@ -35,20 +36,26 @@ export function JobCard({
 }: JobCardProps) {
   return (
     <Link to={`/jobs/${id}`}>
-      <Card className="hover:bg-card/50 bg-transparent transition-colors">
+      <Card className="hover:bg-card/50 h-full bg-transparent transition-colors">
         <CardHeader>
           <div className="mb-4 flex items-center gap-4">
             <img src={companyLogoUrl} className="size-10 rounded-full" />
             <div className="space-x-2">
               <span className="text-accent-foreground">{company}</span>
-              <span className="text-muted-foreground text-xs">{postedAt}</span>
+              <span className="text-muted-foreground text-xs">
+                {DateTime.fromISO(postedAt).toRelative()}
+              </span>
             </div>
           </div>
           <CardTitle>{title}</CardTitle>
         </CardHeader>
         <CardContent>
-          <Badge variant="outline">{type}</Badge>
-          <Badge variant="outline">{positionLocation}</Badge>
+          <Badge variant="outline" className="capitalize">
+            {type}
+          </Badge>
+          <Badge variant="outline" className="capitalize">
+            {positionLocation}
+          </Badge>
         </CardContent>
         <CardFooter className="flex justify-between border-none bg-transparent">
           <div className="flex flex-col">

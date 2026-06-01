@@ -10,6 +10,7 @@ import { getProductsByDateRange } from "~/features/products/queries";
 import { DateTime } from "luxon";
 import { getPosts } from "~/features/community/queries";
 import { getGptIdeas } from "~/features/ideas/queries";
+import { getJobs } from "~/features/jobs/queries";
 
 export const meta: MetaFunction = () => {
   return [
@@ -32,7 +33,8 @@ export async function loader() {
   const ideas = await getGptIdeas({
     limit: 7,
   });
-  return { products, posts, ideas };
+  const jobs = await getJobs({ limit: 11 });
+  return { products, posts, ideas, jobs };
 }
 
 export default function HomePage({ loaderData }: Route.ComponentProps) {
@@ -123,18 +125,18 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
             <Link to="/jobs">Explore all jobs &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 11 }).map((_, index) => (
+        {loaderData.jobs.map((job) => (
           <JobCard
-            key={`jobId-${index}`}
-            id={`jobId-${index}`}
-            company="Meta"
-            companyLogoUrl="https://github.com/facebook.png"
-            postedAt="12 hours ago"
-            title="Software Engineer"
-            type="Full-time"
-            positionLocation="Remote"
-            salary="$100,000 - $120,000"
-            companyHq="San Francisco, CA"
+            key={job.job_id}
+            id={job.job_id}
+            company={job.company_name}
+            companyLogoUrl={job.company_logo}
+            postedAt={job.created_at}
+            title={job.position}
+            type={job.job_type}
+            positionLocation={job.location}
+            salary={job.salary_range}
+            companyHq={job.company_location}
           />
         ))}
       </div>
