@@ -3,14 +3,8 @@ import type { Route } from "./+types/product-reviews-page";
 import { ReviewCard } from "../components/review-card";
 import { Dialog, DialogTrigger } from "~/common/components/ui/dialog";
 import CreateReviewDialog from "../components/create-review-dialog";
-
-export function loader({ params }: Route.LoaderArgs) {
-  return { productId: params.productId };
-}
-
-export function action({ params, request }: Route.ActionArgs) {
-  return { productId: params.productId, requestMethod: request.method };
-}
+import { useOutletContext } from "react-router";
+import { getReviews } from "../queries";
 
 export const meta = ({ params }: Route.MetaArgs) => {
   const id = params.productId ?? "";
@@ -20,26 +14,36 @@ export const meta = ({ params }: Route.MetaArgs) => {
   ];
 };
 
-export default function ProductReviewsPage({}: Route.ComponentProps) {
+export async function loader({ params }: Route.LoaderArgs) {
+  const reviews = await getReviews(Number(params.productId));
+  return { reviews };
+}
+
+export default function ProductReviewsPage({
+  loaderData,
+}: Route.ComponentProps) {
+  const { review_count } = useOutletContext<{ review_count: string }>();
   return (
     <Dialog>
       <div className="max-w-lg space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold">10 Reviews</h2>
+          <h2 className="text-2xl font-bold">
+            {review_count} {`${review_count === "1" ? "Review" : "Reviews"}`}
+          </h2>
           <DialogTrigger>
             <Button variant={"secondary"}>Write a review</Button>
           </DialogTrigger>
         </div>
         <div className="space-y-20">
-          {Array.from({ length: 10 }).map((_, index) => (
+          {loaderData.reviews.map((review) => (
             <ReviewCard
-              key={index}
-              username="J2yonghwa"
-              handle="@username"
-              avatarUrl="https://github.com/jonghwa3471.png"
-              rating={4}
-              content="Lorem ipsum, dolor sit amet consectetur adipisicing elit. Facere sed est culpa, sequi nemo corrupti quo asperiores quia nulla officia ullam beatae. Minima laudantium sit officiis maxime asperiores repellendus vel?"
-              postedAt="10 days ago"
+              key={review.review_id}
+              username={review.user.name}
+              handle={review.user.username}
+              avatarUrl={review.user.avatar}
+              rating={review.rating}
+              content={review.review}
+              postedAt={review.created_at}
             />
           ))}
         </div>
