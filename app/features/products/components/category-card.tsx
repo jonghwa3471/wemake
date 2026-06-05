@@ -8,7 +8,7 @@ import {
 } from "~/common/components/ui/card";
 
 interface CategoryCardProps {
-  id: string;
+  id: number;
   name: string;
   description: string;
 }
@@ -16,7 +16,7 @@ interface CategoryCardProps {
 export function CategoryCard({ id, name, description }: CategoryCardProps) {
   return (
     <Link to={`/products/categories/${id}`} className="block">
-      <Card>
+      <Card className="h-full">
         <CardHeader>
           <CardTitle className="flex">
             {name} <ChevronRightIcon className="size-6" />

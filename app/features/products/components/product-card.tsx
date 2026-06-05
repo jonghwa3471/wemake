@@ -11,7 +11,7 @@ import {
 import { Button } from "~/common/components/ui/button";
 
 interface ProductCardProps {
-  id: string;
+  id: number | string;
   name: string;
   description: string;
   reviewsCount: string;
