@@ -8,13 +8,24 @@ import {
 } from "~/common/components/ui/avatar";
 import { useState } from "react";
 import { Textarea } from "~/common/components/ui/textarea";
+import { DateTime } from "luxon";
 
 interface ReplyProps {
-  avatarUrl: string;
+  avatarUrl: string | null;
   username: string;
   timestamp: string;
   content: string;
   topLevel: boolean;
+  replies?: {
+    post_reply_id: number;
+    reply: string;
+    created_at: string;
+    user: {
+      name: string;
+      avatar: string | null;
+      username: string;
+    };
+  }[];
 }
 
 export function Reply({
@@ -23,6 +34,7 @@ export function Reply({
   timestamp,
   content,
   topLevel,
+  replies,
 }: ReplyProps) {
   const [replying, setReplying] = useState(false);
   const toggleReplying = () => setReplying((prev) => !prev);
@@ -31,15 +43,17 @@ export function Reply({
       <div className="flex w-2/3 items-start gap-5">
         <Avatar className="size-14">
           <AvatarFallback>{username[0]}</AvatarFallback>
-          <AvatarImage src={avatarUrl} />
+          {avatarUrl && <AvatarImage src={avatarUrl} />}
         </Avatar>
-        <div className="flex flex-col items-start gap-2">
+        <div className="flex w-full flex-col items-start gap-2">
           <div className="flex items-center gap-2">
             <Link to={`/users/@${username}`}>
               <h4 className="font-medium">{username}</h4>
             </Link>
             <DotIcon className="size-5" />
-            <span className="text-muted-foreground text-xs">{timestamp}</span>
+            <span className="text-muted-foreground text-xs">
+              {DateTime.fromISO(timestamp).toRelative()}
+            </span>
           </div>
           <p className="text-muted-foreground">{content}</p>
           <Button
@@ -67,15 +81,17 @@ export function Reply({
           </div>
         </Form>
       )}
-      {topLevel && (
+      {topLevel && replies && (
         <div className="w-full pl-20">
-          <Reply
-            avatarUrl="https://github.com/jonghwa3471.png"
-            username="j2yonghwa"
-            timestamp="12 hours ago"
-            content="I've been using Todoist for a while now, and it's really great. It's simple, easy to use, and has a lot of features."
-            topLevel={false}
-          />
+          {replies.map((reply) => (
+            <Reply
+              avatarUrl={reply.user.avatar}
+              username={reply.user.name}
+              timestamp={reply.created_at}
+              content={reply.reply}
+              topLevel={false}
+            />
+          ))}
         </div>
       )}
     </div>

@@ -17,16 +17,17 @@ import {
 } from "~/common/components/ui/avatar";
 import { Badge } from "~/common/components/ui/badge";
 import { Reply } from "~/features/community/components/reply";
-import { getPostById } from "../queries";
+import { getPostById, getReplies } from "../queries";
 import { DateTime } from "luxon";
 
-export const meta: Route.MetaFunction = ({ params }) => {
-  return [{ title: `${params.postId} | wemake` }];
+export const meta = ({ params, loaderData }: Route.MetaArgs) => {
+  return [{ title: `${loaderData.post.title} | wemake` }];
 };
 
 export async function loader({ params }: Route.LoaderArgs) {
   const post = await getPostById(params.postId);
-  return { post };
+  const replies = await getReplies(params.postId);
+  return { post, replies };
 }
 
 export default function PostPage({ loaderData }: Route.ComponentProps) {
@@ -64,7 +65,7 @@ export default function PostPage({ loaderData }: Route.ComponentProps) {
               <ChevronUpIcon className="size-4 shrink-0" />
               <span>{loaderData.post.upvotes}</span>
             </Button>
-            <div className="space-y-20">
+            <div className="w-full space-y-20">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold">{loaderData.post.title}</h2>
                 <div className="text-muted-foreground flex items-center gap-2 text-sm">
@@ -99,13 +100,16 @@ export default function PostPage({ loaderData }: Route.ComponentProps) {
                   {loaderData.post.replies} Replies
                 </h4>
                 <div className="flex flex-col gap-5">
-                  <Reply
-                    avatarUrl="https://github.com/jonghwa3471.png"
-                    username="j2yonghwa"
-                    timestamp="12 hours ago"
-                    content="I've been using Todoist for a while now, and it's really great. It's simple, easy to use, and has a lot of features."
-                    topLevel
-                  />
+                  {loaderData.replies.map((reply) => (
+                    <Reply
+                      avatarUrl={reply.user.avatar}
+                      username={reply.user.name}
+                      timestamp={reply.created_at}
+                      content={reply.reply}
+                      topLevel
+                      replies={reply.post_replies}
+                    />
+                  ))}
                 </div>
               </div>
             </div>

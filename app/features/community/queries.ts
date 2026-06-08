@@ -109,3 +109,31 @@ export const getPostById = async (postId: string) => {
   if (error) throw error;
   return data;
 };
+
+export const getReplies = async (postId: string) => {
+  const replyQuery = `
+    post_reply_id,
+    reply,
+    created_at,
+    user:profiles (
+      name,
+      avatar,
+      username
+    )
+  `;
+  const { data, error } = await client
+    .from("post_replies")
+    .select(
+      `
+      ${replyQuery},
+      post_replies(
+        ${replyQuery}
+      )
+      `,
+    )
+    .eq("post_id", Number(postId))
+    .order("created_at", { ascending: false });
+  // .is("parent_id", null);
+  if (error) throw error;
+  return data;
+};
