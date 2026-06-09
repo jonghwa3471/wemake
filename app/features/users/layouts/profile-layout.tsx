@@ -16,18 +16,29 @@ import {
 } from "~/common/components/ui/dialog";
 import { Textarea } from "~/common/components/ui/textarea";
 import { cn } from "~/lib/utils";
+import type { Route } from "./+types/profile-layout";
+import { getUserProfile } from "../queries";
 
-export default function ProfileLayout() {
+export async function loader({ params }: Route.LoaderArgs) {
+  const user = await getUserProfile(params.username);
+  return { user };
+}
+
+export default function ProfileLayout({ loaderData }: Route.ComponentProps) {
   return (
     <div className="space-y-10">
       <div className="flex items-center gap-4">
         <Avatar className="size-40">
-          <AvatarImage src="https://github.com/shadcn.png" />
-          <AvatarFallback>S</AvatarFallback>
+          {loaderData.user.avatar && (
+            <AvatarImage src={loaderData.user.avatar} />
+          )}
+          <AvatarFallback className="text-2xl">
+            {loaderData.user.name[0]}
+          </AvatarFallback>
         </Avatar>
         <div className="space-y-5">
           <div className="flex gap-2">
-            <h1 className="text-2xl font-semibold">John Doe</h1>
+            <h1 className="text-2xl font-semibold">{loaderData.user.name}</h1>
             <Button variant={"outline"} asChild>
               <Link to="/my/settings">Edit Profile</Link>
             </Button>
@@ -57,8 +68,10 @@ export default function ProfileLayout() {
             </Dialog>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-muted-foreground text-sm">@john_doe</span>
-            <Badge variant={"secondary"}>Product Designer</Badge>
+            <span className="text-muted-foreground text-sm">
+              @{loaderData.user.username}
+            </span>
+            <Badge variant={"secondary"}>{loaderData.user.role}</Badge>
             <Badge variant={"secondary"}>100 followers</Badge>
             <Badge variant={"secondary"}>100 following</Badge>
           </div>
@@ -68,15 +81,15 @@ export default function ProfileLayout() {
         {[
           {
             label: "About",
-            to: "/users/username",
+            to: `/users/${loaderData.user.username}`,
           },
           {
             label: "Products",
-            to: "/users/username/products",
+            to: `/users/${loaderData.user.username}/products`,
           },
           {
             label: "Posts",
-            to: "/users/username/posts",
+            to: `/users/${loaderData.user.username}/posts`,
           },
         ].map((item) => (
           <NavLink
@@ -95,7 +108,12 @@ export default function ProfileLayout() {
         ))}
       </div>
       <div className="max-w-3xl">
-        <Outlet />
+        <Outlet
+          context={{
+            headline: loaderData.user.headline,
+            bio: loaderData.user.bio,
+          }}
+        />
       </div>
     </div>
   );
