@@ -2,13 +2,16 @@ import { ChevronUpIcon, StarIcon } from "lucide-react";
 import type { Route } from "./+types/product-overview-page";
 import { Button } from "~/common/components/ui/button";
 import { Link, useOutletContext } from "react-router";
+import client from "~/supa-client";
 
-export function loader({ params }: Route.LoaderArgs) {
-  return { productId: params.productId };
-}
-
-export function action({ params, request }: Route.ActionArgs) {
-  return { productId: params.productId, requestMethod: request.method };
+export async function loader({ params }: Route.LoaderArgs) {
+  await client.rpc("track_event", {
+    event_type: "product_view",
+    event_data: {
+      product_id: params.productId,
+    },
+  });
+  return null;
 }
 
 export default function ProductOverviewPage() {
