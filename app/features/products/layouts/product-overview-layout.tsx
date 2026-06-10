@@ -4,6 +4,7 @@ import { Button, buttonVariants } from "~/common/components/ui/button";
 import { cn } from "~/lib/utils";
 import type { Route } from "./+types/product-overview-layout";
 import { getProductById } from "../queries";
+import { makeSSRClient } from "~/supa-client";
 
 export const meta = ({ loaderData }: Route.MetaArgs) => {
   return [
@@ -12,8 +13,11 @@ export const meta = ({ loaderData }: Route.MetaArgs) => {
   ];
 };
 
-export async function loader({ params }: Route.LoaderArgs) {
-  const product = await getProductById(Number(params.productId));
+export async function loader({ params, request }: Route.LoaderArgs) {
+  const { client, headers } = makeSSRClient(request);
+  const product = await getProductById(client, {
+    productId: Number(params.productId),
+  });
   return { product };
 }
 

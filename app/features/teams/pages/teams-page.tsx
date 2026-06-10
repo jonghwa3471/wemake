@@ -4,13 +4,15 @@ import { PageHero } from "~/common/components/page-hero";
 import { Button } from "~/common/components/ui/button";
 import { TeamCard } from "../components/team-card";
 import { getTeams } from "../queries";
+import { makeSSRClient } from "~/supa-client";
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: "Teams | wemake" }];
 };
 
-export async function loader() {
-  const teams = await getTeams({ limit: 8 });
+export async function loader({ request }: Route.LoaderArgs) {
+  const { client, headers } = makeSSRClient(request);
+  const teams = await getTeams(client, { limit: 8 });
   return { teams };
 }
 

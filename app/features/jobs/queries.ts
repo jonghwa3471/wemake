@@ -1,23 +1,27 @@
-import client from "~/supa-client";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { type Database } from "~/supa-client";
 
-export const getJobs = async ({
-  limit,
-  location,
-  type,
-  salary,
-}: {
-  limit: number;
-  location?: "remote" | "in-person" | "hybrid";
-  type?: "full-time" | "part-time" | "freelance" | "internship";
-  salary?:
-    | "$0 - $50,000"
-    | "$50,0000 - $70,000"
-    | "$70,000 - $100,000"
-    | "$100,000 - $120,000"
-    | "$120,000 - $150,000"
-    | "$150,000 - $250,000"
-    | "$250,000+";
-}) => {
+export const getJobs = async (
+  client: SupabaseClient<Database>,
+  {
+    limit,
+    location,
+    type,
+    salary,
+  }: {
+    limit: number;
+    location?: "remote" | "in-person" | "hybrid";
+    type?: "full-time" | "part-time" | "freelance" | "internship";
+    salary?:
+      | "$0 - $50,000"
+      | "$50,0000 - $70,000"
+      | "$70,000 - $100,000"
+      | "$100,000 - $120,000"
+      | "$120,000 - $150,000"
+      | "$150,000 - $250,000"
+      | "$250,000+";
+  },
+) => {
   const baseQuery = client
     .from("jobs")
     .select(
@@ -49,7 +53,10 @@ export const getJobs = async ({
   return data;
 };
 
-export const getJobById = async (jobId: string) => {
+export const getJobById = async (
+  client: SupabaseClient<Database>,
+  { jobId }: { jobId: string },
+) => {
   const { data, error } = await client
     .from("jobs")
     .select("*")

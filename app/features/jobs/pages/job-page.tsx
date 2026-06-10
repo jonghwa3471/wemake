@@ -4,13 +4,15 @@ import { Badge } from "~/common/components/ui/badge";
 import { DotIcon } from "lucide-react";
 import { getJobById } from "../queries";
 import { DateTime } from "luxon";
+import { makeSSRClient } from "~/supa-client";
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: "Job Details | wemake" }];
 };
 
-export async function loader({ params }: Route.LoaderArgs) {
-  const job = await getJobById(params.jobId);
+export async function loader({ params, request }: Route.LoaderArgs) {
+  const { client, headers } = makeSSRClient(request);
+  const job = await getJobById(client, { jobId: params.jobId });
   return { job };
 }
 

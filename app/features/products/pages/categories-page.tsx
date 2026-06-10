@@ -3,6 +3,7 @@ import type { Route } from "./+types/categories-page";
 import { PageHero } from "~/common/components/page-hero";
 import { CategoryCard } from "../components/category-card";
 import { getCategories } from "../queries";
+import { makeSSRClient } from "~/supa-client";
 
 export const meta: MetaFunction = () => {
   return [
@@ -11,8 +12,9 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export async function loader() {
-  const categories = await getCategories();
+export async function loader({ request }: Route.LoaderArgs) {
+  const { client, headers } = makeSSRClient(request);
+  const categories = await getCategories(client);
   return { categories };
 }
 

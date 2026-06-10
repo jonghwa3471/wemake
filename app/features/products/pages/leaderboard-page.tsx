@@ -5,6 +5,7 @@ import { ProductCard } from "../components/product-card";
 import { Button } from "~/common/components/ui/button";
 import { getProductsByDateRange } from "../queries";
 import { DateTime } from "luxon";
+import { makeSSRClient } from "~/supa-client";
 
 export const meta: MetaFunction = () => {
   return [
@@ -13,25 +14,26 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export async function loader() {
+export async function loader({ request }: Route.LoaderArgs) {
+  const { client, headers } = makeSSRClient(request);
   const [dailyProducts, weeklyProducts, monthlyProducts, yearlyProducts] =
     await Promise.all([
-      getProductsByDateRange({
+      getProductsByDateRange(client, {
         startDate: DateTime.now().startOf("day"),
         endDate: DateTime.now().endOf("day"),
         limit: 7,
       }),
-      getProductsByDateRange({
+      getProductsByDateRange(client, {
         startDate: DateTime.now().startOf("week"),
         endDate: DateTime.now().endOf("week"),
         limit: 7,
       }),
-      getProductsByDateRange({
+      getProductsByDateRange(client, {
         startDate: DateTime.now().startOf("month"),
         endDate: DateTime.now().endOf("month"),
         limit: 7,
       }),
-      getProductsByDateRange({
+      getProductsByDateRange(client, {
         startDate: DateTime.now().startOf("year"),
         endDate: DateTime.now().endOf("year"),
         limit: 7,

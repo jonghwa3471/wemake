@@ -2,8 +2,9 @@ import db from "~/db";
 import { posts, postUpvotes, topics } from "./schema";
 import { asc, count, eq } from "drizzle-orm";
 import { profiles } from "../users/schema";
-import client from "~/supa-client";
+import { type Database } from "~/supa-client";
 import { DateTime } from "luxon";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 /* export const getTopics = async () => {
   const allTopics = await db
@@ -42,7 +43,7 @@ import { DateTime } from "luxon";
   return allPosts;
 }; */
 
-export const getTopics = async () => {
+export const getTopics = async (client: SupabaseClient<Database>) => {
   // await new Promise((resolve) => setTimeout(resolve, 4000));
   const { data, error } = await client.from("topics").select("name, slug");
   console.log(data, error);
@@ -50,19 +51,22 @@ export const getTopics = async () => {
   return data;
 };
 
-export const getPosts = async ({
-  limit,
-  sorting,
-  period = "all",
-  keyword,
-  topic,
-}: {
-  limit: number;
-  sorting: "newest" | "popular";
-  period?: "all" | "today" | "week" | "month" | "year";
-  keyword?: string;
-  topic?: string;
-}) => {
+export const getPosts = async (
+  client: SupabaseClient<Database>,
+  {
+    limit,
+    sorting,
+    period = "all",
+    keyword,
+    topic,
+  }: {
+    limit: number;
+    sorting: "newest" | "popular";
+    period?: "all" | "today" | "week" | "month" | "year";
+    keyword?: string;
+    topic?: string;
+  },
+) => {
   const baseQuery = client
     .from("community_post_list_view")
     .select(`*`)
@@ -100,7 +104,10 @@ export const getPosts = async ({
   return data;
 };
 
-export const getPostById = async (postId: string) => {
+export const getPostById = async (
+  client: SupabaseClient<Database>,
+  { postId }: { postId: string },
+) => {
   const { data, error } = await client
     .from("community_post_detail")
     .select("*")
@@ -110,7 +117,10 @@ export const getPostById = async (postId: string) => {
   return data;
 };
 
-export const getReplies = async (postId: string) => {
+export const getReplies = async (
+  client: SupabaseClient<Database>,
+  { postId }: { postId: string },
+) => {
   const replyQuery = `
     post_reply_id,
     reply,

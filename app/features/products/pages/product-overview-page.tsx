@@ -2,9 +2,10 @@ import { ChevronUpIcon, StarIcon } from "lucide-react";
 import type { Route } from "./+types/product-overview-page";
 import { Button } from "~/common/components/ui/button";
 import { Link, useOutletContext } from "react-router";
-import client from "~/supa-client";
+import { makeSSRClient } from "~/supa-client";
 
-export async function loader({ params }: Route.LoaderArgs) {
+export async function loader({ params, request }: Route.LoaderArgs) {
+  const { client, headers } = makeSSRClient(request);
   await client.rpc("track_event", {
     event_type: "product_view",
     event_data: {
