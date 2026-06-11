@@ -47,7 +47,8 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
 export default function LoginPage({ actionData }: Route.ComponentProps) {
   const navigation = useNavigation();
-  const isSubmitting = navigation.state === "submitting";
+  const isSubmitting =
+    navigation.state === "submitting" || navigation.state === "loading";
   return (
     <div className="relative flex flex-col items-center justify-center">
       <Button variant={"ghost"} asChild className="absolute top-8 right-8">
