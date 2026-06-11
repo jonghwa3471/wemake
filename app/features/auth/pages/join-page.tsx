@@ -139,7 +139,7 @@ export default function JoinPage({ actionData }: Route.ComponentProps) {
             {isSubmitting ? (
               <LoaderCircle className="animate-spin" />
             ) : (
-              "Log in"
+              "Create account"
             )}
           </Button>
           {actionData && "signUpError" in actionData && (
