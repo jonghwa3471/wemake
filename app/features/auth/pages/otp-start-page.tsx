@@ -27,7 +27,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
   const { error } = await client.auth.signInWithOtp({
     email,
     options: {
-      shouldCreateUser: true,
+      shouldCreateUser: false,
     },
   });
   if (error) {
@@ -47,7 +47,7 @@ export default function OtpStartPage({ actionData }: Route.ComponentProps) {
         <div className="text-center">
           <h1 className="text-2xl font-semibold">Log in with OTP</h1>
           <p className="text-muted-foreground text-sm">
-            We will send you a 4-digit code to log in to your account.
+            We will send you a 6-digit code to log in to your account.
           </p>
         </div>
         <Form className="w-full space-y-4" method="POST">
