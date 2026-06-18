@@ -2,7 +2,7 @@ import { DotIcon, EyeIcon, HeartIcon } from "lucide-react";
 import { PageHero } from "~/common/components/page-hero";
 import { Button } from "~/common/components/ui/button";
 import type { Route } from "./+types/idea-page";
-import { getGptIdea, getGptIdeas } from "../queries";
+import { getGptIdea } from "../queries";
 import { DateTime } from "luxon";
 import { makeSSRClient } from "~/supa-client";
 
