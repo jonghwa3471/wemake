@@ -36,10 +36,15 @@ export const createPost = async (
 
 export const createReply = async (
   client: SupabaseClient<Database>,
-  { postId, reply, userId }: { postId: string; reply: string; userId: string },
+  {
+    postId,
+    reply,
+    userId,
+    topLevelId,
+  }: { postId: string; reply: string; userId: string; topLevelId?: number },
 ) => {
   const { error } = await client.from("post_replies").insert({
-    post_id: Number(postId),
+    ...(topLevelId ? { parent_id: topLevelId } : { post_id: Number(postId) }),
     reply,
     profile_id: userId,
   });

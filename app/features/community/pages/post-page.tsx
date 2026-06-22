@@ -30,7 +30,7 @@ export const meta = ({ params, loaderData }: Route.MetaArgs) => {
 };
 
 export async function loader({ params, request }: Route.LoaderArgs) {
-  const { client, headers } = makeSSRClient(request);
+  const { client } = makeSSRClient(request);
   const [post, replies] = await Promise.all([
     getPostById(client, { postId: params.postId }),
     getReplies(client, { postId: params.postId }),
@@ -40,6 +40,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 
 const formSchema = z.object({
   reply: z.string().min(1),
+  topLevelId: z.coerce.number().optional(),
 });
 
 export const action = async ({ request, params }: Route.ActionArgs) => {
@@ -54,8 +55,13 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
       fieldErrors: z.flattenError(error).fieldErrors,
     };
   }
-  const { reply } = data;
-  await createReply(client, { postId: params.postId, reply, userId });
+  const { reply, topLevelId } = data;
+  await createReply(client, {
+    postId: params.postId,
+    reply,
+    userId,
+    topLevelId,
+  });
   return {
     ok: true,
   };
@@ -155,11 +161,13 @@ export default function PostPage({
                 <div className="flex flex-col gap-5">
                   {loaderData.replies.map((reply) => (
                     <Reply
+                      name={reply.user.name}
+                      username={reply.user.username}
                       avatarUrl={reply.user.avatar}
-                      username={reply.user.name}
                       timestamp={reply.created_at}
                       content={reply.reply}
                       topLevel
+                      topLevelId={reply.post_reply_id}
                       replies={reply.post_replies}
                     />
                   ))}
