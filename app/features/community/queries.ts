@@ -1,6 +1,6 @@
 import db from "~/db";
 import { posts, postUpvotes, topics } from "./schema";
-import { asc, count, eq } from "drizzle-orm";
+import { asc, count, eq, is } from "drizzle-orm";
 import { profiles } from "../users/schema";
 import { type Database } from "~/supa-client";
 import { DateTime } from "luxon";
@@ -142,8 +142,8 @@ export const getReplies = async (
       `,
     )
     .eq("post_id", Number(postId))
+    .is("parent_id", null)
     .order("created_at", { ascending: false });
-  // .is("parent_id", null);
   if (error) throw error;
   return data;
 };

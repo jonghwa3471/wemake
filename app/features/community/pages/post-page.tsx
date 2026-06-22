@@ -8,7 +8,7 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "~/common/components/ui/breadcrumb";
-import { Form, Link } from "react-router";
+import { Form, Link, useOutletContext } from "react-router";
 import { Textarea } from "~/common/components/ui/textarea";
 import {
   Avatar,
@@ -20,6 +20,10 @@ import { Reply } from "~/features/community/components/reply";
 import { getPostById, getReplies } from "../queries";
 import { DateTime } from "luxon";
 import { makeSSRClient } from "~/supa-client";
+import { getLoggedInUserId } from "~/features/users/queries";
+import z from "zod";
+import { createReply } from "../mutations";
+import { useEffect, useRef } from "react";
 
 export const meta = ({ params, loaderData }: Route.MetaArgs) => {
   return [{ title: `${loaderData.post.title} | wemake` }];
@@ -27,12 +31,52 @@ export const meta = ({ params, loaderData }: Route.MetaArgs) => {
 
 export async function loader({ params, request }: Route.LoaderArgs) {
   const { client, headers } = makeSSRClient(request);
-  const post = await getPostById(client, { postId: params.postId });
-  const replies = await getReplies(client, { postId: params.postId });
+  const [post, replies] = await Promise.all([
+    getPostById(client, { postId: params.postId }),
+    getReplies(client, { postId: params.postId }),
+  ]);
   return { post, replies };
 }
 
-export default function PostPage({ loaderData }: Route.ComponentProps) {
+const formSchema = z.object({
+  reply: z.string().min(1),
+});
+
+export const action = async ({ request, params }: Route.ActionArgs) => {
+  const { client } = makeSSRClient(request);
+  const userId = await getLoggedInUserId(client);
+  const formData = await request.formData();
+  const { success, data, error } = formSchema.safeParse(
+    Object.fromEntries(formData),
+  );
+  if (!success) {
+    return {
+      fieldErrors: z.flattenError(error).fieldErrors,
+    };
+  }
+  const { reply } = data;
+  await createReply(client, { postId: params.postId, reply, userId });
+  return {
+    ok: true,
+  };
+};
+
+export default function PostPage({
+  loaderData,
+  actionData,
+}: Route.ComponentProps) {
+  const { isLoggedIn, name, username, avatar } = useOutletContext<{
+    isLoggedIn: boolean;
+    name?: string;
+    username?: string;
+    avatar?: string;
+  }>();
+  const formRef = useRef<HTMLFormElement>(null);
+  useEffect(() => {
+    if (actionData?.ok) {
+      formRef.current?.reset();
+    }
+  }, [actionData?.ok]);
   return (
     <div className="space-y-10">
       <Breadcrumb>
@@ -83,20 +127,27 @@ export default function PostPage({ loaderData }: Route.ComponentProps) {
                   {loaderData.post.content}
                 </p>
               </div>
-              <Form className="flex w-3/4 items-start gap-5">
-                <Avatar className="size-14">
-                  <AvatarFallback>N</AvatarFallback>
-                  <AvatarImage src="https://github.com/jonghwa3471.png" />
-                </Avatar>
-                <div className="flex w-full flex-col items-end gap-5">
-                  <Textarea
-                    placeholder="Write a reply"
-                    className="w-full resize-none"
-                    rows={5}
-                  />
-                  <Button>Reply</Button>
-                </div>
-              </Form>
+              {isLoggedIn && (
+                <Form
+                  className="flex w-3/4 items-start gap-5"
+                  method="POST"
+                  ref={formRef}
+                >
+                  <Avatar className="size-14">
+                    <AvatarFallback>{name?.[0]}</AvatarFallback>
+                    <AvatarImage src={avatar} />
+                  </Avatar>
+                  <div className="flex w-full flex-col items-end gap-5">
+                    <Textarea
+                      name="reply"
+                      placeholder="Write a reply"
+                      className="w-full resize-none"
+                      rows={5}
+                    />
+                    <Button>Reply</Button>
+                  </div>
+                </Form>
+              )}
               <div className="space-y-10">
                 <h4 className="font-semibold">
                   {loaderData.post.replies} Replies
