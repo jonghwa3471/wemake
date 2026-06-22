@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { Textarea } from "~/common/components/ui/textarea";
 import { DateTime } from "luxon";
 import type { action } from "../pages/post-page";
+import { cn } from "~/lib/utils";
 
 interface ReplyProps {
   name: string;
@@ -59,7 +60,7 @@ export function Reply({
     }
   }, [actionData]);
   return (
-    <div className="flex flex-col gap-2">
+    <div className={cn("flex flex-col gap-2", isLoggedIn ? "" : "gap-5")}>
       <div className="flex w-2/3 items-start gap-5">
         <Avatar className="size-14">
           <AvatarFallback>{name[0]}</AvatarFallback>
@@ -107,7 +108,7 @@ export function Reply({
         </Form>
       )}
       {topLevel && replies && (
-        <div className="w-full pl-20">
+        <div className={cn("w-full pl-20", isLoggedIn ? "" : "space-y-5")}>
           {replies.map((reply) => (
             <Reply
               name={reply.user.name}
