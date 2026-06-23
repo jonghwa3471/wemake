@@ -6,6 +6,10 @@ import CreateReviewDialog from "../components/create-review-dialog";
 import { useOutletContext } from "react-router";
 import { getReviews } from "../queries";
 import { makeSSRClient } from "~/supa-client";
+import { getLoggedInUserId } from "~/features/users/queries";
+import z from "zod";
+import { createProductReview } from "../mutations";
+import { useEffect, useState } from "react";
 
 export const meta = ({ params }: Route.MetaArgs) => {
   const id = params.productId ?? "";
@@ -23,12 +27,47 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   return { reviews };
 }
 
+const formSchema = z.object({
+  review: z.string().min(1),
+  rating: z.coerce.number().min(1).max(5),
+});
+
+export const action = async ({ request, params }: Route.ActionArgs) => {
+  const { client } = makeSSRClient(request);
+  const userId = await getLoggedInUserId(client);
+  const formData = await request.formData();
+  const { success, data, error } = formSchema.safeParse(
+    Object.fromEntries(formData),
+  );
+  if (!success) {
+    return {
+      fieldErrors: z.flattenError(error).fieldErrors,
+    };
+  }
+  await createProductReview(client, {
+    productId: params.productId,
+    userId,
+    review: data.review,
+    rating: data.rating,
+  });
+  return {
+    ok: true,
+  };
+};
+
 export default function ProductReviewsPage({
   loaderData,
+  actionData,
 }: Route.ComponentProps) {
   const { review_count } = useOutletContext<{ review_count: string }>();
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (actionData?.ok) {
+      setOpen(false);
+    }
+  }, [actionData]);
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <div className="max-w-lg space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold">
