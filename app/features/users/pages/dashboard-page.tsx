@@ -12,6 +12,8 @@ import {
   type ChartConfig,
 } from "~/common/components/ui/chart";
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
+import { makeSSRClient } from "~/supa-client";
+import { getLoggedInUserId } from "../queries";
 
 export const meta: Route.MetaFunction = () => {
   return [
@@ -21,14 +23,19 @@ export const meta: Route.MetaFunction = () => {
   ];
 };
 
-const chartData = [
-  { month: "January", views: 186 },
-  { month: "February", views: 305 },
-  { month: "March", views: 237 },
-  { month: "April", views: 73 },
-  { month: "May", views: 209 },
-  { month: "June", views: 214 },
-];
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const { client } = makeSSRClient(request);
+  const userId = await getLoggedInUserId(client);
+  const { data, error } = await client.rpc("get_dashboard_stats", {
+    user_id: userId,
+  });
+  if (error) {
+    throw error;
+  }
+  return {
+    chartData: data,
+  };
+};
 const chartConfig = {
   views: {
     label: "👀",
@@ -36,7 +43,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export default function DashboardPage() {
+export default function DashboardPage({ loaderData }: Route.ComponentProps) {
   return (
     <div className="space-y-5">
       <h1 className="mb-6 text-2xl font-semibold">Dashboard</h1>
@@ -48,8 +55,9 @@ export default function DashboardPage() {
           <ChartContainer config={chartConfig}>
             <LineChart
               accessibilityLayer
-              data={chartData}
+              data={loaderData.chartData}
               margin={{
+                top: 20,
                 left: 12,
                 right: 12,
               }}
@@ -60,7 +68,7 @@ export default function DashboardPage() {
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
-                tickFormatter={(value) => value.slice(0, 3)}
+                padding={{ left: 15, right: 15 }}
               />
               <ChartTooltip
                 cursor={false}
