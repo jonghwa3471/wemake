@@ -9,7 +9,7 @@ import { Button } from "~/common/components/ui/button";
 import { makeSSRClient } from "~/supa-client";
 import { getLoggedInUserId, getUserById } from "../queries";
 import z from "zod";
-import { updateUser } from "../mutations";
+import { updateUser, updateUserAvatar } from "../mutations";
 import {
   Alert,
   AlertDescription,
@@ -39,30 +39,52 @@ export const action = async ({ request }: Route.ActionArgs) => {
   const { client } = makeSSRClient(request);
   const userId = await getLoggedInUserId(client);
   const formData = await request.formData();
-  const { success, data, error } = formSchema.safeParse(
-    Object.fromEntries(formData),
-  );
-  if (!success) {
+  const avatar = formData.get("avatar");
+  if (avatar && avatar instanceof File) {
+    if (avatar.size <= 2097152 && avatar.type.startsWith("image/")) {
+      const { data, error } = await client.storage
+        .from("avatars")
+        .upload(userId, avatar, { contentType: avatar.type, upsert: true });
+      if (error) {
+        return {
+          formErrors: { avatar: ["Failed to upload avatar"] },
+        };
+      }
+      const {
+        data: { publicUrl },
+      } = client.storage.from("avatars").getPublicUrl(data.path);
+      await updateUserAvatar(client, { id: userId, avatarUrl: publicUrl });
+    } else {
+      return {
+        formErrors: { avatar: ["Invalid file size or type"] },
+      };
+    }
+  } else {
+    const { success, data, error } = formSchema.safeParse(
+      Object.fromEntries(formData),
+    );
+    if (!success) {
+      return {
+        fieldErrors: z.flattenError(error).fieldErrors,
+      };
+    }
+    const { name, role, headline, bio } = data;
+    await updateUser(client, {
+      id: userId,
+      name,
+      role: role as
+        | "developer"
+        | "designer"
+        | "marketer"
+        | "founder"
+        | "product-manager",
+      headline,
+      bio,
+    });
     return {
-      fieldErrors: z.flattenError(error).fieldErrors,
+      ok: true,
     };
   }
-  const { name, role, headline, bio } = data;
-  await updateUser(client, {
-    id: userId,
-    name,
-    role: role as
-      | "developer"
-      | "designer"
-      | "marketer"
-      | "founder"
-      | "product-manager",
-    headline,
-    bio,
-  });
-  return {
-    ok: true,
-  };
 };
 
 export default function SettingsPage({
@@ -180,8 +202,12 @@ export default function SettingsPage({
             </Button>
           </Form>
         </div>
-        <aside className="col-span-2 rounded-lg border p-6 shadow-md">
-          <Label className="flex flex-col items-start gap-1">
+        <Form
+          className="col-span-2 rounded-lg border p-6 shadow-md"
+          method="POST"
+          encType="multipart/form-data"
+        >
+          <Label className="mb-5 flex flex-col items-start gap-1">
             Avatar
             <small className="text-muted-foreground">
               This is your public avatar.
@@ -218,9 +244,14 @@ export default function SettingsPage({
               className="w-1/2 cursor-pointer"
               onChange={onChange}
               required
-              name="icon"
+              name="avatar"
               accept="image/*"
             />
+            {actionData?.formErrors?.avatar && (
+              <p className="text-sm text-red-500">
+                {actionData?.formErrors?.avatar.join(", ")}
+              </p>
+            )}
             <div className="flex flex-col text-xs">
               <span className="text-muted-foreground">
                 Recommended size: 128x128px
@@ -238,7 +269,7 @@ export default function SettingsPage({
               )}
             </Button>
           </div>
-        </aside>
+        </Form>
       </div>
     </div>
   );
