@@ -30,11 +30,14 @@ export const products = pgTable(
       reviews: 0,
       upvotes: 0,
     }),
-    profile_id: uuid().notNull(),
-    category_id: bigint({ mode: "number" }).references(
-      () => categories.category_id,
-      { onDelete: "set null" },
-    ),
+    profile_id: uuid()
+      .references(() => profiles.profile_id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+    category_id: bigint({ mode: "number" })
+      .references(() => categories.category_id, { onDelete: "set null" })
+      .notNull(),
     created_at: timestamp().notNull().defaultNow(),
     updated_at: timestamp().notNull().defaultNow(),
   },

@@ -592,7 +592,7 @@ export type Database = {
       }
       products: {
         Row: {
-          category_id: number | null
+          category_id: number
           created_at: string
           description: string
           how_it_works: string
@@ -606,7 +606,7 @@ export type Database = {
           url: string
         }
         Insert: {
-          category_id?: number | null
+          category_id: number
           created_at?: string
           description: string
           how_it_works: string
@@ -620,7 +620,7 @@ export type Database = {
           url: string
         }
         Update: {
-          category_id?: number | null
+          category_id?: number
           created_at?: string
           description?: string
           how_it_works?: string
@@ -640,6 +640,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "categories"
             referencedColumns: ["category_id"]
+          },
+          {
+            foreignKeyName: "products_profile_id_profiles_profile_id_fk"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
           },
           {
             foreignKeyName: "products_to_profiles"

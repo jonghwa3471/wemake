@@ -1,4 +1,4 @@
-import { Form, type MetaFunction } from "react-router";
+import { Form, redirect, useNavigation, type MetaFunction } from "react-router";
 import { PageHero } from "~/common/components/page-hero";
 import { Label } from "~/common/components/ui/label";
 import { Input } from "~/common/components/ui/input";
@@ -7,14 +7,12 @@ import SelectPair from "~/common/components/select-pair";
 import React, { useState } from "react";
 import { Button } from "~/common/components/ui/button";
 import type { Route } from "./+types/submit-product-page";
-
-export function loader({ request }: Route.LoaderArgs) {
-  return { requestUrl: request.url };
-}
-
-export function action({ request }: Route.ActionArgs) {
-  return { requestMethod: request.method };
-}
+import { makeSSRClient } from "~/supa-client";
+import { getLoggedInUserId } from "~/features/users/queries";
+import z from "zod";
+import { getCategories } from "../queries";
+import { createProduct } from "../mutations";
+import { LoaderCircle } from "lucide-react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -23,7 +21,71 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export default function SubmitPage({ actionData }: Route.ComponentProps) {
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const { client } = makeSSRClient(request);
+  const userId = await getLoggedInUserId(client);
+  const categories = await getCategories(client);
+  return {
+    categories,
+  };
+};
+
+const formSchema = z.object({
+  name: z.string().min(1),
+  tagline: z.string().min(1),
+  url: z.string().min(1),
+  description: z.string().min(1),
+  howItWorks: z.string().min(1),
+  category: z.coerce.number(),
+  icon: z.instanceof(File).refine((file) => {
+    return file.size <= 2097152 && file.type.startsWith("image/");
+  }),
+});
+
+export const action = async ({ request }: Route.ActionArgs) => {
+  const { client } = makeSSRClient(request);
+  const userId = await getLoggedInUserId(client);
+  const formData = await request.formData();
+  const { success, data, error } = formSchema.safeParse(
+    Object.fromEntries(formData),
+  );
+  if (!success) {
+    return {
+      fieldErrors: z.flattenError(error).fieldErrors,
+    };
+  }
+  const { icon, ...rest } = data;
+  const { data: uploadData, error: uploadError } = await client.storage
+    .from("icons")
+    .upload(`${userId}/${Date.now()}`, icon, {
+      contentType: icon.type,
+      upsert: false,
+    });
+  if (uploadError) {
+    return {
+      fieldErrors: { icon: ["Failed to upload icon"] },
+    };
+  }
+  const {
+    data: { publicUrl },
+  } = client.storage.from("icons").getPublicUrl(uploadData.path);
+  const productId = await createProduct(client, {
+    name: rest.name,
+    tagline: rest.tagline,
+    description: rest.description,
+    howItWorks: rest.howItWorks,
+    url: rest.url,
+    iconUrl: publicUrl,
+    categoryId: rest.category,
+    userId,
+  });
+  return redirect(`/products/${productId}`);
+};
+
+export default function SubmitPage({
+  loaderData,
+  actionData,
+}: Route.ComponentProps) {
   const [icon, setIcon] = useState<string | null>(null);
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.currentTarget.files) {
@@ -31,13 +93,20 @@ export default function SubmitPage({ actionData }: Route.ComponentProps) {
       setIcon(URL.createObjectURL(file));
     }
   };
+  const navigation = useNavigation();
+  const isSubmitting =
+    navigation.state === "submitting" || navigation.state === "loading";
   return (
     <div>
       <PageHero
         title="Submit Your Product"
         subtitle="Share your product with the world"
       />
-      <Form className="mx-auto grid max-w-5xl grid-cols-2 gap-10">
+      <Form
+        className="mx-auto grid max-w-5xl grid-cols-2 gap-10"
+        method="POST"
+        encType="multipart/form-data"
+      >
         <div className="space-y-5">
           <InputPair
             label="Name"
@@ -48,6 +117,11 @@ export default function SubmitPage({ actionData }: Route.ComponentProps) {
             required
             placeholder="Name of your product"
           />
+          {actionData?.fieldErrors?.name && (
+            <p className="text-sm text-red-500">
+              {actionData?.fieldErrors?.name.join(", ")}
+            </p>
+          )}
           <InputPair
             label="Tagline"
             description="60 characters or less"
@@ -57,6 +131,11 @@ export default function SubmitPage({ actionData }: Route.ComponentProps) {
             type="text"
             placeholder="A concise description of your product"
           />
+          {actionData?.fieldErrors?.tagline && (
+            <p className="text-sm text-red-500">
+              {actionData?.fieldErrors?.tagline.join(", ")}
+            </p>
+          )}
           <InputPair
             label="URL"
             description="The URL of your product"
@@ -66,6 +145,11 @@ export default function SubmitPage({ actionData }: Route.ComponentProps) {
             type="url"
             placeholder="https://example.com"
           />
+          {actionData?.fieldErrors?.url && (
+            <p className="text-sm text-red-500">
+              {actionData?.fieldErrors?.url.join(", ")}
+            </p>
+          )}
           <InputPair
             textArea
             label="Description"
@@ -76,21 +160,48 @@ export default function SubmitPage({ actionData }: Route.ComponentProps) {
             type="text"
             placeholder="A detailed description of your product"
           />
+          {actionData?.fieldErrors?.description && (
+            <p className="text-sm text-red-500">
+              {actionData?.fieldErrors?.description.join(", ")}
+            </p>
+          )}
+          <InputPair
+            textArea
+            label="How it works"
+            description="A detailed description of how your product works"
+            id="howItWorks"
+            name="howItWorks"
+            required
+            type="text"
+            placeholder="A detailed description of how your product works"
+          />
+          {actionData?.fieldErrors?.howItWorks && (
+            <p className="text-sm text-red-500">
+              {actionData?.fieldErrors?.howItWorks.join(", ")}
+            </p>
+          )}
           <SelectPair
             label="Category"
             description="The category of your product"
             name="category"
             required
             placeholder="Select a category"
-            options={[
-              { label: "AI", value: "ai" },
-              { label: "Design", value: "design" },
-              { label: "Marketing", value: "marketing" },
-              { label: "Development", value: "development" },
-            ]}
+            options={loaderData.categories.map((category) => ({
+              label: category.name,
+              value: category.category_id.toString(),
+            }))}
           />
-          <Button type="submit" className="w-full" size={"lg"}>
-            Submit
+          {actionData?.fieldErrors?.category && (
+            <p className="text-sm text-red-500">
+              {actionData?.fieldErrors?.category.join(", ")}
+            </p>
+          )}
+          <Button className="w-full" disabled={isSubmitting} size={"lg"}>
+            {isSubmitting ? (
+              <LoaderCircle className="animate-spin" />
+            ) : (
+              "Submit"
+            )}
           </Button>
         </div>
         <div className="flex flex-col space-y-2">
@@ -133,6 +244,11 @@ export default function SubmitPage({ actionData }: Route.ComponentProps) {
             name="icon"
             accept="image/*"
           />
+          {actionData?.fieldErrors?.icon && (
+            <p className="text-sm text-red-500">
+              {actionData?.fieldErrors?.icon.join(", ")}
+            </p>
+          )}
           <div className="flex flex-col text-xs">
             <span className="text-muted-foreground">
               Recommended size: 128x128px

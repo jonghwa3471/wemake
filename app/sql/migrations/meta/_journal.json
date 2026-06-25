@@ -120,6 +120,13 @@
       "when": 1782193816406,
       "tag": "0016_clammy_dagger",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1782378366723,
+      "tag": "0017_perfect_grim_reaper",
+      "breakpoints": true
     }
   ]
 }
