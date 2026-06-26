@@ -8,7 +8,7 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "~/common/components/ui/breadcrumb";
-import { Form, Link, useOutletContext } from "react-router";
+import { Form, Link, useFetcher, useOutletContext } from "react-router";
 import { Textarea } from "~/common/components/ui/textarea";
 import {
   Avatar,
@@ -72,6 +72,7 @@ export default function PostPage({
   loaderData,
   actionData,
 }: Route.ComponentProps) {
+  const fetcher = useFetcher();
   const { isLoggedIn, name, username, avatar } = useOutletContext<{
     isLoggedIn: boolean;
     name?: string;
@@ -114,16 +115,28 @@ export default function PostPage({
       <div className="grid grid-cols-6 items-start gap-40">
         <div className="col-span-4 space-y-10">
           <div className="flex w-full items-start gap-10">
-            <Button
-              variant="outline"
-              className={cn(
-                "flex h-14 flex-col",
-                loaderData.post.is_upvoted ? "border-primary text-primary" : "",
-              )}
+            <fetcher.Form
+              method="POST"
+              action={`/community/${loaderData.post.post_id}/upvote`}
             >
-              <ChevronUpIcon className="size-4 shrink-0" />
-              <span>{loaderData.post.upvotes}</span>
-            </Button>
+              <input
+                type="hidden"
+                value={loaderData.post.post_id}
+                name="postId"
+              />
+              <Button
+                variant="outline"
+                className={cn(
+                  "flex h-14 flex-col",
+                  loaderData.post.is_upvoted
+                    ? "border-primary text-primary"
+                    : "",
+                )}
+              >
+                <ChevronUpIcon className="size-4 shrink-0" />
+                <span>{loaderData.post.upvotes}</span>
+              </Button>
+            </fetcher.Form>
             <div className="w-full space-y-20">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold">{loaderData.post.title}</h2>
@@ -168,6 +181,7 @@ export default function PostPage({
                 <div className="flex flex-col gap-5">
                   {loaderData.replies.map((reply) => (
                     <Reply
+                      key={reply.post_reply_id}
                       name={reply.user.name}
                       username={reply.user.username}
                       avatarUrl={reply.user.avatar}
