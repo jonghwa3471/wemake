@@ -119,11 +119,6 @@ export default function PostPage({
               method="POST"
               action={`/community/${loaderData.post.post_id}/upvote`}
             >
-              <input
-                type="hidden"
-                value={loaderData.post.post_id}
-                name="postId"
-              />
               <Button
                 variant="outline"
                 className={cn(

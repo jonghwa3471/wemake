@@ -72,7 +72,9 @@ export const getPosts = async (
     .select(`*`)
     .limit(limit);
   if (sorting === "newest") {
-    baseQuery.order("created_at", { ascending: false });
+    baseQuery
+      .order("created_at", { ascending: false })
+      .order("post_id", { ascending: false });
   } else if (sorting === "popular") {
     if (period === "all") {
       baseQuery.order("upvotes", { ascending: false });
@@ -87,7 +89,9 @@ export const getPosts = async (
       } else if (period === "year") {
         baseQuery.gte("created_at", today.startOf("year").toISO());
       }
-      baseQuery.order("upvotes", { ascending: false });
+      baseQuery
+        .order("upvotes", { ascending: false })
+        .order("post_id", { ascending: false });
     }
   }
 
