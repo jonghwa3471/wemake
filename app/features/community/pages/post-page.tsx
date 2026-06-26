@@ -24,6 +24,7 @@ import { getLoggedInUserId } from "~/features/users/queries";
 import z from "zod";
 import { createReply } from "../mutations";
 import { useEffect, useRef } from "react";
+import { cn } from "~/lib/utils";
 
 export const meta = ({ params, loaderData }: Route.MetaArgs) => {
   return [{ title: `${loaderData.post.title} | wemake` }];
@@ -113,7 +114,13 @@ export default function PostPage({
       <div className="grid grid-cols-6 items-start gap-40">
         <div className="col-span-4 space-y-10">
           <div className="flex w-full items-start gap-10">
-            <Button variant="outline" className="flex h-14 flex-col">
+            <Button
+              variant="outline"
+              className={cn(
+                "flex h-14 flex-col",
+                loaderData.post.is_upvoted ? "border-primary text-primary" : "",
+              )}
+            >
               <ChevronUpIcon className="size-4 shrink-0" />
               <span>{loaderData.post.upvotes}</span>
             </Button>
