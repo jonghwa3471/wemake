@@ -127,6 +127,20 @@
       "when": 1782378366723,
       "tag": "0017_perfect_grim_reaper",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1783322199345,
+      "tag": "0018_burly_hex",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1783322534909,
+      "tag": "0019_petite_hulk",
+      "breakpoints": true
     }
   ]
 }
