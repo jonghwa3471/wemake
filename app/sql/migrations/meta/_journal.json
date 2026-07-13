@@ -141,6 +141,13 @@
       "when": 1783322534909,
       "tag": "0019_petite_hulk",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1783913958660,
+      "tag": "0020_tricky_dragon_man",
+      "breakpoints": true
     }
   ]
 }

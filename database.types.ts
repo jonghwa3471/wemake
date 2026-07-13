@@ -915,7 +915,7 @@ export type Database = {
       event_type: "product_view" | "product_visit" | "profile_view"
       job_type: "full-time" | "part-time" | "freelance" | "internship"
       location: "remote" | "in-person" | "hybrid"
-      notification_type: "follow" | "review" | "reply" | "mention"
+      notification_type: "follow" | "review" | "reply"
       product_stage: "idea" | "prototype" | "mvp" | "product"
       role:
         | "developer"
@@ -1061,7 +1061,7 @@ export const Constants = {
       event_type: ["product_view", "product_visit", "profile_view"],
       job_type: ["full-time", "part-time", "freelance", "internship"],
       location: ["remote", "in-person", "hybrid"],
-      notification_type: ["follow", "review", "reply", "mention"],
+      notification_type: ["follow", "review", "reply"],
       product_stage: ["idea", "prototype", "mvp", "product"],
       role: ["developer", "designer", "marketer", "founder", "product-manager"],
       salary_range: [
