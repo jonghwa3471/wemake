@@ -12,9 +12,10 @@ import {
 import { Button } from "~/common/components/ui/button";
 import { CheckIcon } from "lucide-react";
 import { cn } from "~/lib/utils";
-import { Link } from "react-router";
+import { Link, useFetcher } from "react-router";
 
 interface NotificationCardProps {
+  id: number;
   username: string;
   avatarUrl: string;
   avatarFallback: string;
@@ -27,6 +28,7 @@ interface NotificationCardProps {
 }
 
 export function NotificationCard({
+  id,
   username,
   avatarUrl,
   avatarFallback,
@@ -47,8 +49,10 @@ export function NotificationCard({
         return " replied to your post: ";
     }
   };
+  const fetcher = useFetcher();
+  const optimisticSeen = fetcher.state === "idle" ? seen : true;
   return (
-    <Card className={cn("min-w-sm", seen ? "" : "bg-sky-500/60")}>
+    <Card className={cn("min-w-sm", optimisticSeen ? "" : "bg-sky-500/60")}>
       <CardHeader className="flex flex-row items-start gap-5">
         <Avatar>
           <AvatarFallback>{avatarFallback}</AvatarFallback>
@@ -73,9 +77,13 @@ export function NotificationCard({
         </div>
       </CardHeader>
       <CardFooter className="flex justify-end border-none bg-transparent">
-        <Button variant={"outline"} size={"icon"}>
-          <CheckIcon className="size-4" />
-        </Button>
+        {optimisticSeen ? null : (
+          <fetcher.Form method="POST" action={`/my/notifications/${id}/see`}>
+            <Button variant={"outline"} size={"icon"}>
+              <CheckIcon className="size-4" />
+            </Button>
+          </fetcher.Form>
+        )}
       </CardFooter>
     </Card>
   );
