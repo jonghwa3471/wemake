@@ -903,6 +903,12 @@ export type Database = {
           product_visits: number
         }[]
       }
+      get_room: {
+        Args: { from_user_id: string; to_user_id: string }
+        Returns: {
+          message_room_id: number
+        }[]
+      }
       track_event: {
         Args: {
           event_data: Json
