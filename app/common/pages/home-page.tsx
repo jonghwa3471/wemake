@@ -44,7 +44,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 export default function HomePage({ loaderData }: Route.ComponentProps) {
   return (
     <div className="space-y-40 px-20">
-      <div className="grid grid-cols-3 items-start gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <div>
           <h2 className="text-5xl leading-tight font-bold tracking-tight">
             Today's Products
@@ -68,7 +68,7 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
           />
         ))}
       </div>
-      <div className="grid grid-cols-3 items-start gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <div>
           <h2 className="text-5xl leading-tight font-bold tracking-tight">
             Latest Discussions

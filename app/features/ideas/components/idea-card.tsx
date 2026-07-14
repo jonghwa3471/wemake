@@ -58,7 +58,7 @@ export function IdeaCard({
           {postedAt && <span>{DateTime.fromISO(postedAt).toRelative()}</span>}
         </CardContent>
       )}
-      <CardFooter className="flex justify-end gap-2 border-none bg-transparent">
+      <CardFooter className="mt-auto flex justify-end gap-2 border-none bg-transparent">
         {claimed || owner ? (
           <Button variant="outline" className="cursor-not-allowed" disabled>
             <LockIcon className="size-4" />

@@ -54,10 +54,10 @@ export function PostCard({
     });
   };
   return (
-    <Link to={`/community/${id}`} className="block">
+    <Link to={`/community/${id}`} className="block h-full">
       <Card
         className={cn(
-          "hover:bg-card/50 bg-transparent transition-colors",
+          "hover:bg-card/50 h-full bg-transparent transition-colors",
           expanded ? "flex flex-row items-center justify-between p-0" : "",
         )}
       >
@@ -77,7 +77,7 @@ export function PostCard({
           </div>
         </CardHeader>
         {!expanded && (
-          <CardFooter className="flex justify-end border-none bg-transparent">
+          <CardFooter className="mt-auto flex justify-end border-none bg-transparent">
             <Button variant="link">Reply &rarr;</Button>
           </CardFooter>
         )}
