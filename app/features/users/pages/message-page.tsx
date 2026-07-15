@@ -10,17 +10,20 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "~/common/components/ui/avatar";
-import { Form, useOutletContext } from "react-router";
+import { Form, useNavigation, useOutletContext } from "react-router";
 import { Textarea } from "~/common/components/ui/textarea";
 import { Button } from "~/common/components/ui/button";
-import { SendIcon } from "lucide-react";
+import { LoaderCircle, SendIcon } from "lucide-react";
 import { MessageBubble } from "../components/message-bubble";
 import { makeSSRClient } from "~/supa-client";
 import {
   getLoggedInUserId,
   getMessagesByRoomId,
   getRoomsParticipant,
+  sendMessageToRoom,
 } from "../queries";
+import z from "zod";
+import { useEffect, useRef } from "react";
 
 export const meta: Route.MetaFunction = () => {
   return [
@@ -44,8 +47,46 @@ export const loader = async ({ request, params }: Route.LoaderArgs) => {
   return { messages, participant };
 };
 
-export default function MessagePage({ loaderData }: Route.ComponentProps) {
+const formSchema = z.object({
+  message: z.string().min(1),
+});
+
+export const action = async ({ request, params }: Route.ActionArgs) => {
+  const { client } = makeSSRClient(request);
+  const userId = await getLoggedInUserId(client);
+  const formData = await request.formData();
+  const { success, data, error } = formSchema.safeParse(
+    Object.fromEntries(formData),
+  );
+  if (!success) {
+    return {
+      fieldErrors: z.flattenError(error).fieldErrors,
+    };
+  }
+  await sendMessageToRoom(client, {
+    messageRoomId: params.messageRoomId,
+    message: data.message,
+    userId,
+  });
+  return {
+    ok: true,
+  };
+};
+
+export default function MessagePage({
+  loaderData,
+  actionData,
+}: Route.ComponentProps) {
   const { userId } = useOutletContext<{ userId: string }>();
+  const formRef = useRef<HTMLFormElement>(null);
+  useEffect(() => {
+    if (actionData?.ok) {
+      formRef.current?.reset();
+    }
+  }, [actionData?.ok]);
+  const navigation = useNavigation();
+  const isSubmitting =
+    navigation.state === "submitting" || navigation.state === "loading";
   return (
     <div className="flex h-full flex-col justify-between">
       <Card>
@@ -75,20 +116,36 @@ export default function MessagePage({ loaderData }: Route.ComponentProps) {
       </div>
       <Card>
         <CardHeader>
-          <Form className="relative flex items-center justify-end">
+          <Form
+            className="relative flex items-center justify-end"
+            method="POST"
+            ref={formRef}
+          >
             <Textarea
               placeholder="Write a message..."
               rows={2}
+              name="message"
+              required
               className="resize-none"
             />
             <Button
               type="submit"
               size={"icon"}
               className="absolute right-2 cursor-pointer hover:opacity-50"
+              disabled={isSubmitting}
             >
-              <SendIcon className="size-4" />
+              {isSubmitting ? (
+                <LoaderCircle className="animate-spin" />
+              ) : (
+                <SendIcon className="size-4" />
+              )}
             </Button>
           </Form>
+          {actionData && actionData.fieldErrors?.message && (
+            <p className="text-sm text-red-500">
+              {actionData?.fieldErrors?.message?.join(", ")}
+            </p>
+          )}
         </CardHeader>
       </Card>
     </div>
