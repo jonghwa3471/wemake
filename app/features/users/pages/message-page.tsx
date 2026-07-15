@@ -15,7 +15,7 @@ import { Textarea } from "~/common/components/ui/textarea";
 import { Button } from "~/common/components/ui/button";
 import { LoaderCircle, SendIcon } from "lucide-react";
 import { MessageBubble } from "../components/message-bubble";
-import { makeSSRClient } from "~/supa-client";
+import { browserClient, makeSSRClient, type Database } from "~/supa-client";
 import {
   getLoggedInUserId,
   getMessagesByRoomId,
@@ -23,7 +23,7 @@ import {
   sendMessageToRoom,
 } from "../queries";
 import z from "zod";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const meta: Route.MetaFunction = () => {
   return [
@@ -77,13 +77,36 @@ export default function MessagePage({
   loaderData,
   actionData,
 }: Route.ComponentProps) {
-  const { userId } = useOutletContext<{ userId: string }>();
+  const [messages, setMessages] = useState(loaderData.messages);
+  const { userId, avatar, name } = useOutletContext<{
+    userId: string;
+    avatar: string;
+    name: string;
+  }>();
   const formRef = useRef<HTMLFormElement>(null);
   useEffect(() => {
     if (actionData?.ok) {
       formRef.current?.reset();
     }
   }, [actionData?.ok]);
+  useEffect(() => {
+    const changes = browserClient
+      .channel(`room:${userId}-${loaderData.participant.profile.profile_id}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "messages" },
+        (payload) => {
+          setMessages((prev) => [
+            ...prev,
+            payload.new as Database["public"]["Tables"]["messages"]["Row"],
+          ]);
+        },
+      )
+      .subscribe();
+    return () => {
+      changes.unsubscribe();
+    };
+  }, []);
   const navigation = useNavigation();
   const isSubmitting =
     navigation.state === "submitting" || navigation.state === "loading";
@@ -104,13 +127,21 @@ export default function MessagePage({
         </CardHeader>
       </Card>
       <div className="flex h-full max-h-2/3 flex-col justify-start space-y-4 overflow-y-auto py-10">
-        {loaderData.messages.map((message) => (
+        {messages.map((message) => (
           <MessageBubble
             key={message.message_id}
-            avatarUrl={message.sender.avatar ?? ""}
-            avatarFallback={message.sender.name[0] ?? "?"}
+            avatarUrl={
+              message.sender_id === userId
+                ? avatar
+                : (loaderData.participant.profile.avatar ?? "")
+            }
+            avatarFallback={
+              message.sender_id === userId
+                ? name[0]
+                : (loaderData.participant.profile.name[0] ?? "?")
+            }
             content={message.content}
-            isCurrentUser={message.sender.profile_id === userId}
+            isCurrentUser={message.sender_id === userId}
           />
         ))}
       </div>
@@ -151,3 +182,5 @@ export default function MessagePage({
     </div>
   );
 }
+
+export const shouldRevalidate = () => false;
