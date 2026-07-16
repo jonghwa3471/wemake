@@ -900,14 +900,14 @@ export type Database = {
           },
           {
             foreignKeyName: "message_room_members_profile_id_profiles_profile_id_fk"
-            columns: ["profile_id"]
+            columns: ["other_profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["profile_id"]
           },
           {
             foreignKeyName: "message_room_members_profile_id_profiles_profile_id_fk"
-            columns: ["other_profile_id"]
+            columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["profile_id"]
