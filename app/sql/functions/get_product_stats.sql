@@ -3,7 +3,9 @@ RETURNS TABLE(
     product_views bigint,
     product_visits bigint,
     month text
-) AS $$
+)
+SET search_path = ''
+AS $$
 BEGIN
     RETURN QUERY
     SELECT

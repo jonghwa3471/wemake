@@ -91,6 +91,11 @@ export const messageRooms = pgTable("message_rooms", {
   message_room_id: bigint({ mode: "number" })
     .primaryKey()
     .generatedAlwaysAsIdentity(),
+  created_by: uuid()
+    .references(() => profiles.profile_id, {
+      onDelete: "cascade",
+    })
+    .notNull(),
   created_at: timestamp().notNull().defaultNow(),
 });
 

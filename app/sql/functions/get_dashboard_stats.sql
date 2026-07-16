@@ -2,7 +2,9 @@ CREATE OR REPLACE FUNCTION get_dashboard_stats(user_id uuid)
 RETURNS TABLE (
     views bigint,
     month text
-) AS $$
+)
+SET search_path = ''
+AS $$
 BEGIN
     RETURN QUERY
     SELECT

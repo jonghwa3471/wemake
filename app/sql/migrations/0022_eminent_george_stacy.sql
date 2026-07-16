@@ -1,0 +1,2 @@
+ALTER TABLE "message_rooms" ADD COLUMN "created_by" uuid NOT NULL;--> statement-breakpoint
+ALTER TABLE "message_rooms" ADD CONSTRAINT "message_rooms_created_by_profiles_profile_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."profiles"("profile_id") ON DELETE cascade ON UPDATE no action;

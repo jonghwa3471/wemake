@@ -1,4 +1,6 @@
-CREATE OR REPLACE VIEW gpt_ideas_view AS
+CREATE OR REPLACE VIEW gpt_ideas_view
+WITH (security_invoker = false)
+AS
 SELECT
     gpt_ideas.gpt_idea_id,
     CASE WHEN gpt_ideas.claimed_at IS NULL THEN gpt_ideas.idea ELSE 'Claimed Claimed Claimed Claimed Claimed Claimed Claimed' END AS idea,

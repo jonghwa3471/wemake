@@ -93,7 +93,9 @@ export const sendMessage = async (
   } else {
     const { data: roomData, error: roomError } = await client
       .from("message_rooms")
-      .insert({})
+      .insert({
+        created_by: fromUserId,
+      })
       .select("message_room_id")
       .single();
     if (roomError) {

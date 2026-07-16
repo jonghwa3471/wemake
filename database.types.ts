@@ -257,17 +257,28 @@ export type Database = {
       message_rooms: {
         Row: {
           created_at: string
+          created_by: string
           message_room_id: number
         }
         Insert: {
           created_at?: string
+          created_by: string
           message_room_id?: never
         }
         Update: {
           created_at?: string
+          created_by?: string
           message_room_id?: never
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "message_rooms_created_by_profiles_profile_id_fk"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+        ]
       }
       messages: {
         Row: {

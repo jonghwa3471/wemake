@@ -1,4 +1,6 @@
-CREATE OR REPLACE VIEW product_overview_view AS
+CREATE OR REPLACE VIEW product_overview_view
+WITH (security_invoker = true)
+AS
 SELECT
     product_id,
     name,
