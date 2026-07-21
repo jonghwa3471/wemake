@@ -175,7 +175,7 @@ export default function Navigation({
                       <NavigationMenuTrigger>{menu.name}</NavigationMenuTrigger>
                     </Link>
                     <NavigationMenuContent>
-                      <ul className="grid w-[600px] grid-cols-2 gap-3 p-4 font-light">
+                      <ul className="grid w-150 grid-cols-2 gap-3 p-4 font-light">
                         {menu.items?.map((item) => (
                           <NavigationMenuItem
                             key={item.name}
