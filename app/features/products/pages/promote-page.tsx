@@ -23,7 +23,7 @@ export function action({ request }: Route.ActionArgs) {
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "PromoteProduct | wemake" },
+    { title: "Promote Product | wemake" },
     { name: "description", content: "Promote your product" },
   ];
 };
