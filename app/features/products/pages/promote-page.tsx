@@ -23,7 +23,7 @@ export function action({ request }: Route.ActionArgs) {
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "Promote Product | wemake" },
+    { title: "PromoteProduct | wemake" },
     { name: "description", content: "Promote your product" },
   ];
 };
@@ -61,37 +61,61 @@ export default function PromotePage() {
     initToss();
   }, [clientKey, customerKey]);
   useEffect(() => {
-    if (widgets.current) {
-      widgets.current.setAmount({
-        value: totalDays * 20000,
-        currency: "KRW",
-      });
-    }
+    const updateAmount = async () => {
+      if (widgets.current) {
+        await widgets.current.setAmount({
+          value: totalDays * 20000,
+          currency: "KRW",
+        });
+      }
+    };
+    updateAmount();
   }, [promotionPeriod]);
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const product = formData.get("product");
+    if (!product || !promotionPeriod?.from || !promotionPeriod.to) return;
+    await widgets.current?.requestPayment({
+      orderId: crypto.randomUUID(),
+      orderName: `wemake promotion for ${product}`,
+      customerEmail: "whdghk3471@naver.com",
+      customerName: "jonghwa",
+      customerMobilePhone: "01012345678",
+      metadata: {
+        product,
+        promotionFrom: DateTime.fromJSDate(promotionPeriod.from).toISO(),
+        promotionTo: DateTime.fromJSDate(promotionPeriod.to).toISO(),
+      },
+      successUrl: `${window.location.href}/success`,
+      failUrl: `${window.location.href}/fail`,
+    });
+  };
   return (
     <div>
       <PageHero
         title="Promote Your Product"
         subtitle="Boost your product's visibility"
       />
-      <div className="grid grid-cols-6 gap-10">
-        <Form className="col-span-3 mx-auto flex flex-col items-center gap-10">
+      <form className="grid grid-cols-6 gap-10" onSubmit={handleSubmit}>
+        <div className="col-span-3 mx-auto flex flex-col items-center gap-10">
           <SelectPair
+            required
             label="Select a product"
             description="Select the product you want to promote."
             name="product"
             placeholder="Select a product"
             options={[
               {
-                label: "AI Dark Mode Maker",
+                label: "AI Dark Mode Maker 1",
                 value: "ai-dark-mode-maker-1",
               },
               {
-                label: "AI Dark Mode Maker",
+                label: "AI Dark Mode Maker 2",
                 value: "ai-dark-mode-maker-2",
               },
               {
-                label: "AI Dark Mode Maker",
+                label: "AI Dark Mode Maker 3",
                 value: "ai-dark-mode-maker-3",
               },
             ]}
@@ -112,7 +136,7 @@ export default function PromotePage() {
               disabled={[{ before: new Date() }]}
             />
           </div>
-        </Form>
+        </div>
         <aside className="col-span-3 flex flex-col items-center px-20">
           <div id="toss-payment-methods" className="w-full" />
           <div id="toss-payment-agreement" className="w-full" />
@@ -125,7 +149,7 @@ export default function PromotePage() {
             )
           </Button>
         </aside>
-      </div>
+      </form>
     </div>
   );
 }
