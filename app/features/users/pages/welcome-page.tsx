@@ -24,8 +24,8 @@ const client = new Resend(process.env.RESEND_API_KEY);
 
 export const loader = async ({ params }: Route.LoaderArgs) => {
   const { data, error } = await client.emails.send({
-    from: "Somename <somename@mail.your.domain>",
-    to: ["blabla@naver.com"],
+    from: "Nico <nico@mail.jonghwa.uk>",
+    to: ["whdghk3471@naver.com"],
     subject: "Welcome to wemake",
     react: <WelcomeUser username={params.username} />,
   });

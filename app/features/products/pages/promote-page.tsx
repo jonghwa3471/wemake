@@ -41,47 +41,50 @@ export default function PromotePage() {
         title="Promote Your Product"
         subtitle="Boost your product's visibility"
       />
-      <Form className="mx-auto flex max-w-sm flex-col items-center gap-10">
-        <SelectPair
-          label="Select a product"
-          description="Select the product you want to promote."
-          name="product"
-          placeholder="Select a product"
-          options={[
-            {
-              label: "AI Dark Mode Maker",
-              value: "ai-dark-mode-maker-1",
-            },
-            {
-              label: "AI Dark Mode Maker",
-              value: "ai-dark-mode-maker-2",
-            },
-            {
-              label: "AI Dark Mode Maker",
-              value: "ai-dark-mode-maker-3",
-            },
-          ]}
-        />
-        <div className="flex w-full flex-col items-center gap-2">
-          <Label className="flex flex-col gap-1">
-            Select a range of dates for promotion
-            <small className="text-muted-foreground">
-              Minimum duration is 3 days.
-            </small>
-          </Label>
-          <Calendar
-            className="min-w-sm"
-            mode="range"
-            selected={promotionPeriod}
-            onSelect={setPromotionPeriod}
-            min={3}
-            disabled={[{ before: new Date() }]}
+      <div className="grid grid-cols-6">
+        <Form className="col-span-4 mx-auto flex flex-col items-center gap-10">
+          <SelectPair
+            label="Select a product"
+            description="Select the product you want to promote."
+            name="product"
+            placeholder="Select a product"
+            options={[
+              {
+                label: "AI Dark Mode Maker",
+                value: "ai-dark-mode-maker-1",
+              },
+              {
+                label: "AI Dark Mode Maker",
+                value: "ai-dark-mode-maker-2",
+              },
+              {
+                label: "AI Dark Mode Maker",
+                value: "ai-dark-mode-maker-3",
+              },
+            ]}
           />
-        </div>
-        <Button disabled={totalDays === 0}>
-          Go to checkout (${totalDays * 20})
-        </Button>
-      </Form>
+          <div className="flex w-full flex-col items-center gap-2">
+            <Label className="flex flex-col gap-1">
+              Select a range of dates for promotion
+              <small className="text-muted-foreground">
+                Minimum duration is 3 days.
+              </small>
+            </Label>
+            <Calendar
+              className="min-w-sm"
+              mode="range"
+              selected={promotionPeriod}
+              onSelect={setPromotionPeriod}
+              min={3}
+              disabled={[{ before: new Date() }]}
+            />
+          </div>
+          <Button disabled={totalDays === 0}>
+            Go to checkout (${totalDays * 20})
+          </Button>
+        </Form>
+        <aside className="col-span-2"></aside>
+      </div>
     </div>
   );
 }
