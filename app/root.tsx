@@ -16,6 +16,8 @@ import { Settings } from "luxon";
 import { cn } from "./lib/utils";
 import { makeSSRClient } from "./supa-client";
 import { countNotifications, getUserById } from "./features/users/queries";
+import { SpeedInsights } from "@vercel/speed-insights/react";
+import { Analytics } from "@vercel/analytics/react";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -43,6 +45,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <main>{children}</main>
+
+        <Analytics />
+        <SpeedInsights />
+
         <ScrollRestoration />
         <Scripts />
       </body>
