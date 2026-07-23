@@ -1,4 +1,7 @@
-import { pixelBasedPreset, type TailwindConfig } from "react-email";
+import {
+  pixelBasedPreset,
+  type TailwindConfig,
+} from "@react-email/tailwind";
 
 export default {
   presets: [pixelBasedPreset],
