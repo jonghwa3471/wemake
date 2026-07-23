@@ -169,6 +169,20 @@
       "when": 1784701517734,
       "tag": "0023_happy_mauler",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1784769486922,
+      "tag": "0024_marvelous_doctor_spectrum",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1784770535048,
+      "tag": "0025_windy_iron_fist",
+      "breakpoints": true
     }
   ]
 }
