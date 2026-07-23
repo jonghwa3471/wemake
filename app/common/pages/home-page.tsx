@@ -23,6 +23,8 @@ export const meta: MetaFunction = () => {
 };
 
 export async function loader({ request }: Route.LoaderArgs) {
+  throw new Error("My first Sentry error!");
+
   const { client, headers } = makeSSRClient(request);
   const products = await getProductsByDateRange(client, {
     startDate: DateTime.now().startOf("day"),

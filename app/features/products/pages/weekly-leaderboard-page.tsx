@@ -46,7 +46,10 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const date = DateTime.fromObject({
     weekYear: parsedData.year,
     weekNumber: parsedData.week,
-  });
+  })
+    .setZone("Asia/Seoul")
+    .startOf("week");
+
   if (!date.isValid) {
     throw data(
       {

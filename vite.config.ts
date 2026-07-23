@@ -2,12 +2,30 @@ import { reactRouter } from "@react-router/dev/vite";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 
-export default defineConfig({
-  plugins: [tailwindcss(), reactRouter()],
+import {
+  sentryReactRouter,
+  type SentryReactRouterBuildOptions,
+} from "@sentry/react-router";
+
+const sentryConfig: SentryReactRouterBuildOptions = {
+  org: "jonghwa",
+  project: "wemake",
+  // An auth token is required for uploading source maps;
+  // store it in an environment variable to keep it secure.
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  // ...
+};
+
+export default defineConfig((config) => ({
+  plugins: [
+    tailwindcss(),
+    reactRouter(),
+    sentryReactRouter(sentryConfig, config),
+  ],
   resolve: {
     tsconfigPaths: true,
   },
   server: {
     allowedHosts: true,
   },
-});
+}));

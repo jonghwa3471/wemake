@@ -45,7 +45,10 @@ export async function loader({ params, request }: Route.LoaderArgs) {
       },
     );
   }
-  const date = DateTime.fromObject(parsedData);
+  const date = DateTime.fromObject(parsedData)
+    .setZone("Asia/Seoul")
+    .startOf("day");
+
   if (!date.isValid) {
     throw data(
       {
