@@ -8,10 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { DateTime } from "luxon";
 import { Button } from "~/common/components/ui/button";
-import {
-  loadTossPayments,
-  type TossPaymentsWidgets,
-} from "@tosspayments/tosspayments-sdk";
+import type { TossPaymentsWidgets } from "@tosspayments/tosspayments-sdk";
 
 export function loader({ request }: Route.LoaderArgs) {
   return { requestUrl: request.url };
@@ -45,6 +42,9 @@ export default function PromotePage() {
   const widgets = useRef<TossPaymentsWidgets | null>(null);
   useEffect(() => {
     const initToss = async () => {
+      const { loadTossPayments } = await import(
+        "@tosspayments/tosspayments-sdk"
+      );
       const toss = await loadTossPayments(clientKey);
       widgets.current = toss.widgets({ customerKey });
       await widgets.current.setAmount({
